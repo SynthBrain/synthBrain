@@ -63,7 +63,7 @@ func StartWebCam() {
 		//ch <- massVis2
 
 		//write jpg file
-		//gocv.IMWrite("file.jpg", img)
+		//gocv.IMWrite("C:\Users\synth\go\src\file.jpg", img)
 
 		//window.WaitKey(1)
 		if OnOff == true {

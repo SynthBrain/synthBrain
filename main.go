@@ -2,17 +2,19 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
-	"github.com/g3n/engine/light"
-	"SynthBrainGO/vision"
+	"SynthBrainGO/levelScene"
+	"SynthBrainGO/myGui"
+	_ "SynthBrainGO/vision"
 	"fmt"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/gui"
+	_ "github.com/g3n/engine/gui"
+	_"github.com/g3n/engine/light"
 	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
 	"math/rand"
-	"strconv"
+	_ "strconv"
 )
 
 func main() {
@@ -30,49 +32,21 @@ func main() {
 		panic(err)
 	}
 
-	// add GUI
+	// add GUI*********************************************************
 	// Create and add a label to the root panel
 	//fps := float32(app.FrameCount()) / application.Get().RunSeconds()
-	fps := 2
-	l1 := gui.NewLabel("Simple GUI FPS: " + strconv.Itoa(int(fps)))
-	l1.SetPosition(10, 10)
-	l1.SetPaddings(2, 2, 2, 2)
+	l1 := myGui.LabelFps(10, 10, "140")
 	app.Gui().Root().Add(l1)
 
 	// Create and add button 1 to the root panel
 	onOff := false
-	b1 := *gui.NewButton("WebCam")
-	b1.SetPosition(10, 40)
-	b1.Subscribe(gui.OnClick, func(name string, ev interface{}) {
-		// new gorutine for non-block app
-		if onOff == false {
-			fmt.Println("start WebCam")
-			vision.OnOff = false
-			//go vision.StartWebCam(chImg)
-			go vision.StartWebCam()
-
-			onOff = true
-		} else {
-			fmt.Println("stop WebCam")
-			vision.OnOff = true
-			onOff = false
-		}
-	})
+	b1 := myGui.WebCam(10, 40, &onOff)
 	app.Gui().Root().Add(b1)
 
 	// Create and add exit button to the root panel
-	b3 := *gui.NewButton("Exit ")
-	b3.SetPosition(10, 70)
-	b3.Subscribe(gui.OnClick, func(name string, ev interface{}) {
-		fmt.Println("Application Close")
-		//if onOff == true {
-		//	fmt.Println("stop WebCam")
-		//	vision.OnOff = true
-		//	//onOff = false
-		//}
-		app.Window().SetShouldClose(true)
-	})
-	app.Gui().Root().Add(b3)
+	b2 := myGui.Exit(10, 70, &onOff, app)
+	app.Gui().Root().Add(b2)
+	//******************************************************************
 
 	//Create a blue torus and add it to the scene
 	//geom := geometry.NewTorus(1, .4, 12, 32, math32.Pi*2)
@@ -105,26 +79,19 @@ func main() {
 	}
 
 	//Add lights to the scene
-	ambientLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.8)
-	app.Scene().Add(ambientLight)
-	pointLight := light.NewPoint(&math32.Color{1, 1, 1}, 5.0)
-	pointLight.SetPosition(0, 0, 0)
-	app.Scene().Add(pointLight)
+	levelScene.LightsScene(app)
 
 	// Add an axis helper to the scene
-	axis := graphic.NewAxisHelper(0.5)
-	app.Scene().Add(axis)
+	levelScene.AxisHelper(0.5, app)
 
-	gridSizePosition := 10
-	gridHelp := graphic.NewGridHelper(float32(gridSizePosition), 1, math32.NewColor("LightGrey"))
-	gridHelp.SetPosition(float32(gridSizePosition/2), -0.2, float32(gridSizePosition/2))
-	app.Scene().Add(gridHelp)
+	// Add an grid helper to the scene
+	levelScene.GridHelper(10, app)
 
+	// Add camera to the scene
 	app.CameraPersp().SetPosition(15, 15, 15)
 	app.Gl().ClearColor(0, 0.5, 0.7, 1)
-	//app.Gl().ClearColor(0.5,0.5,0.5,1)
-	//app.Run()
-
+	
+	// Start application
 	err = app.Run()
 	if err != nil {
 		panic(err)

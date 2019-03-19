@@ -1,6 +1,7 @@
 package vision
 
 import (
+	"github.com/g3n/engine/util/application"
 	"fmt"
 	"gocv.io/x/gocv"
 	"image"
@@ -16,7 +17,7 @@ var OnOff = false
 */
 
 //func StartWebCam(ch chan<- *[640][480]byte) {
-func StartWebCam() {
+func StartWebCam(app *application.Application) {
 	// set to use a video capture device 0
 	deviceID := 0
 	// open webcam
@@ -55,7 +56,7 @@ func StartWebCam() {
 		}
 		//window.IMShow(img)
 		imgVision, _ = img.ToImage()
-		fmt.Println(imgVision.Bounds().Size())
+		fmt.Println(imgVision.Bounds().Size(), " ", float32(app.FrameCount()) / application.Get().RunSeconds() )
 		//fmt.Println(imgVision)
 
 		//massVis = massiveImg(imgVision)

@@ -14,7 +14,6 @@ import (
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
 	"math/rand"
-	_ "strconv"
 )
 
 func main() {
@@ -34,13 +33,15 @@ func main() {
 
 	// add GUI*********************************************************
 	// Create and add a label to the root panel
+
 	//fps := float32(app.FrameCount()) / application.Get().RunSeconds()
-	l1 := myGui.LabelFps(10, 10, "140")
+	l1 := myGui.LabelFps(10, 10, "240")
 	app.Gui().Root().Add(l1)
+	//go myGui.LabelFpsTest(10, 10, strconv.Itoa(int(app.FrameCount()) / int(application.Get().RunSeconds())), app)
 
 	// Create and add button 1 to the root panel
 	onOff := false
-	b1 := myGui.WebCam(10, 40, &onOff)
+	b1 := myGui.WebCam(10, 40, &onOff, app)
 	app.Gui().Root().Add(b1)
 
 	// Create and add exit button to the root panel
@@ -54,7 +55,7 @@ func main() {
 	//torusMesh := graphic.NewMesh(geom, mat)
 	//app.Scene().Add(torusMesh)
 
-	myDots := 700
+	myDots := 7000
 	for i := 0; i < myDots; i++ {
 		go func() {
 			dotGeom := geometry.NewCircle(0, 3)

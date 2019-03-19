@@ -7,7 +7,7 @@ import (
 	"github.com/g3n/engine/util/application"
 )
 
-func WebCam(posX, posY float32, onOff *bool) *gui.Button{
+func WebCam(posX, posY float32, onOff *bool, app *application.Application) *gui.Button{
 	b1 := *gui.NewButton("WebCam")
 	b1.SetPosition(10, 40)
 	b1.Subscribe(gui.OnClick, func(name string, ev interface{}) {
@@ -16,7 +16,7 @@ func WebCam(posX, posY float32, onOff *bool) *gui.Button{
 			fmt.Println("start WebCam")
 			vision.OnOff = false
 			//go vision.StartWebCam(chImg)
-			go vision.StartWebCam()
+			go vision.StartWebCam(app)
 			*onOff = true
 		} else {
 			fmt.Println("stop WebCam")

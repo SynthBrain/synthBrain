@@ -1,6 +1,6 @@
 package samples
 
-import "SynthBrainGo/samples/models"
+import "synthBrain/samples/models"
 
 func notOopmain() {
 	user := models.NewUser("Synth", "Brain", 7000)

@@ -2,15 +2,16 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
-	"synthBrain/myGui"
-	"synthBrain/levelScene"
 	"fmt"
+	"math/rand"
+	"synthBrain/levelScene"
+	"synthBrain/myGui"
+
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
-	"math/rand"
 )
 
 func main() {
@@ -51,6 +52,7 @@ func main() {
 	//mat := material.NewPhong(math32.NewColor("DarkBlue"))
 	//torusMesh := graphic.NewMesh(geom, mat)
 	//app.Scene().Add(torusMesh)
+	// Test Test
 
 	myDots := 7000
 	for i := 0; i < myDots; i++ {
@@ -88,7 +90,7 @@ func main() {
 	// Add camera to the scene
 	app.CameraPersp().SetPosition(15, 15, 15)
 	app.Gl().ClearColor(0, 0.5, 0.7, 1)
-	
+
 	// Start application
 	err = app.Run()
 	if err != nil {

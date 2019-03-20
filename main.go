@@ -52,13 +52,12 @@ func main() {
 	//mat := material.NewPhong(math32.NewColor("DarkBlue"))
 	//torusMesh := graphic.NewMesh(geom, mat)
 	//app.Scene().Add(torusMesh)
-	// Test Test
-
+	
 	myDots := 7000
 	for i := 0; i < myDots; i++ {
 		go func() {
 			dotGeom := geometry.NewCircle(0, 3)
-			dotMat := material.NewPhong(math32.NewColor("DarkBlue"))
+			dotMat := material.NewPhong(math32.NewColor("White"))
 			dotMesh := graphic.NewPoints(dotGeom, dotMat)
 			dotMesh.SetPosition(
 				float32(rand.Int31n(15)),

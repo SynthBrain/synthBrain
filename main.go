@@ -2,9 +2,8 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
-	"SynthBrainGO/levelScene"
-	"SynthBrainGO/myGui"
-	_ "SynthBrainGO/vision"
+	"synthBrain/myGui"
+	"synthBrain/levelScene"
 	"fmt"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/graphic"

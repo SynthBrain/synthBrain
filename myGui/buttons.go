@@ -1,7 +1,7 @@
 package myGui
 
 import (
-	"SynthBrainGO/vision"
+	"synthBrain/vision"
 	"fmt"
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/util/application"

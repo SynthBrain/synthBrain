@@ -1,11 +1,11 @@
 package samples
 
 import (
+	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/light"
 	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
 	"math/rand"
 )
@@ -52,7 +52,7 @@ func notmain() {
 	// Add lights to the scene
 	ambientLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.8)
 	app.Scene().Add(ambientLight)
-	pointLight := light.NewPoint(&math32.Color{1, 1, 1}, 5.0)
+	pointLight := light.NewPoint(&math32.Color{1.0, 1.0, 1.0}, 5.0)
 	pointLight.SetPosition(1, 0, 2)
 	app.Scene().Add(pointLight)
 

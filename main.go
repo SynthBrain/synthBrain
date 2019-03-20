@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/graphic"
-	_ "github.com/g3n/engine/gui"
-	_"github.com/g3n/engine/light"
 	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"

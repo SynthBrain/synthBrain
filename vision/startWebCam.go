@@ -56,8 +56,8 @@ func StartWebCam(app *application.Application) {
 		}
 		//window.IMShow(img)
 		imgVision, _ = img.ToImage()
-		fmt.Println(imgVision.Bounds().Size(), " ", float32(app.FrameCount()) / application.Get().RunSeconds() )
-		//fmt.Println(imgVision)
+		//fmt.Println(imgVision.Bounds().Size(), " ", float32(app.FrameCount()) / application.Get().RunSeconds() )
+		fmt.Println(imgVision.Bounds().Size())
 
 		//massVis = massiveImg(imgVision)
 		//massVis2 := &massVis

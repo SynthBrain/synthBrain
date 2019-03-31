@@ -10,6 +10,7 @@ package neurons
 4 правило - нейроны с одинаковой частотой могут группироваться
 5 правило - нейроны имеют типизацию, по векторным возможностям
 */
+
 import (
 	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/material"

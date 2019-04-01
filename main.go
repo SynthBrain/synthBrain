@@ -1,5 +1,17 @@
 package main
 
+
+// // Create a tic-tac-toe board.
+// board := [][]string{
+// 	[]string{"_", "_", "_"},
+// 	[]string{"_", "_", "_"},
+// 	[]string{"_", "_", "_"},
+// }
+
+// for i := 0; i < len(board); i++ {
+// 	fmt.Printf("%s\n", strings.Join(board[i], " "))
+// }
+
 // 3840 * 2160 = 8 294 400
 import (
 	"fmt"
@@ -13,7 +25,9 @@ import (
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
 )
-
+/*
+	Рисовать только тех что имеют достаточный уровень активность и окончательно не затухли
+*/
 func main() {
 	//принимать в канал указатель *
 	//chImg := make(chan *[640][480]byte)
@@ -34,13 +48,13 @@ func main() {
 	l1 := myGui.LabelFps(10, 10, "240")
 	app.Gui().Root().Add(l1)
 
-	go func() {
-		for {
-			if a, b, c := app.FrameRater().FPS(60); a > 0 && b > 0 && c == true {
-				fmt.Println("FPS ", int(b))
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		if a, b, c := app.FrameRater().FPS(60); a > 0 && b > 0 && c == true {
+	// 			fmt.Println("FPS ", int(b))
+	// 		}
+	// 	}
+	// }()
 
 	//fps := float32(app.FrameCount()) / application.Get().RunSeconds()
 

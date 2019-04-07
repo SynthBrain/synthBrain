@@ -8,9 +8,9 @@ import (
 )
 
 func WebCam(posX, posY float32, onOff *bool, app *application.Application) *gui.Button{
-	b1 := *gui.NewButton("WebCam")
-	b1.SetPosition(10, 40)
-	b1.Subscribe(gui.OnClick, func(name string, ev interface{}) {
+	button := *gui.NewButton("WebCam")
+	button.SetPosition(10, 40)
+	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		// new gorutine for non-block app
 		if *onOff == false {
 			fmt.Println("start WebCam")
@@ -24,7 +24,7 @@ func WebCam(posX, posY float32, onOff *bool, app *application.Application) *gui.
 			*onOff = false
 		}
 	})
-	return &b1
+	return &button
 }
 
 func Exit(posX, posY float32, onOff *bool, app *application.Application) *gui.Button{

@@ -76,7 +76,7 @@ func main() {
 	//torusMesh := graphic.NewMesh(geom, mat)
 	//app.Scene().Add(torusMesh)
 
-	myDots := 7000
+	myDots := 700
 	for i := 0; i < myDots; i++ {
 		go func() {
 			// dotGeom := geometry.NewCircle(0.2, 3)

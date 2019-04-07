@@ -1,6 +1,5 @@
 package main
 
-
 // // Create a tic-tac-toe board.
 // board := [][]string{
 // 	[]string{"_", "_", "_"},
@@ -14,17 +13,14 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
-	"fmt"
 	"math/rand"
+	"synthBrain/neurons"
+	"fmt"
 	"synthBrain/levelScene"
 	"synthBrain/myGui"
-
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/application"
 )
+
 /*
 	Рисовать только тех что имеют достаточный уровень активность и окончательно не затухли
 */
@@ -48,17 +44,7 @@ func main() {
 	l1 := myGui.LabelFps(10, 10, "240")
 	app.Gui().Root().Add(l1)
 
-	// go func() {
-	// 	for {
-	// 		if a, b, c := app.FrameRater().FPS(60); a > 0 && b > 0 && c == true {
-	// 			fmt.Println("FPS ", int(b))
-	// 		}
-	// 	}
-	// }()
-
-	//fps := float32(app.FrameCount()) / application.Get().RunSeconds()
-
-	//go myGui.LabelFpsTest(10, 10, strconv.Itoa(int(app.FrameCount()) / int(application.Get().RunSeconds())), app)
+	
 
 	// Create and add button 1 to the root panel
 	onOff := false
@@ -70,43 +56,12 @@ func main() {
 	app.Gui().Root().Add(b2)
 	//******************************************************************
 
-	//Create a blue torus and add it to the scene
-	//geom := geometry.NewTorus(1, .4, 12, 32, math32.Pi*2)
-	//mat := material.NewPhong(math32.NewColor("DarkBlue"))
-	//torusMesh := graphic.NewMesh(geom, mat)
-	//app.Scene().Add(torusMesh)
-
 	myDots := 700
 	for i := 0; i < myDots; i++ {
-		go func() {
-			// dotGeom := geometry.NewCircle(0.2, 3)
-			// dotMat := material.NewPhong(math32.NewColor("White"))
-			// dotMesh := graphic.NewMesh(dotGeom, dotMat)
-			// dotMesh.SetPosition(
-			// 	float32(rand.Int31n(15)),
-			// 	float32(rand.Int31n(15)),
-			// 	float32(rand.Int31n(15)))
-			// app.Scene().Add(dotMesh)
-
-			dotGeom := geometry.NewCircle(0, 3)
-			//dotGeom := geometry.NewGeometry()
-			dotMat := material.NewPhong(math32.NewColor("White"))
-			dotMesh := graphic.NewPoints(dotGeom, dotMat)
-			dotMesh.SetPosition(
-				float32(rand.Int31n(20)),
-				float32(rand.Int31n(20)),
-				float32(rand.Int31n(20)))
-			app.Scene().Add(dotMesh)
-			//fmt.Println(dotMesh.Position())
-
-			//if (i / 2) == 0 {
-			//	dotsMesh.SetPosition(float32(rand.Int31n(20)),
-			//float32(rand.Int31n(20)), float32(rand.Int31n(20)))
-			//} else {
-			//	dotsMesh.SetPosition(float32(rand.Int31n(20))+0.5,
-			//float32(rand.Int31n(20)), float32(rand.Int31n(20))+0.5)
-			//}
-
+		func() {
+			nn := neurons.NewBody(app)
+			nn.CreateBody()
+			nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
 		}()
 	}
 
@@ -132,3 +87,12 @@ func main() {
 
 	//fmt.Printf("app was running for %f \n", application.Get().RunSeconds())
 }
+// go func() {
+	// 	for {
+	// 		if a, b, c := app.FrameRater().FPS(60); a > 0 && b > 0 && c == true {
+	// 			fmt.Println("FPS ", int(b))
+	// 		}
+	// 	}
+	// }()
+	//fps := float32(app.FrameCount()) / application.Get().RunSeconds()
+	//go myGui.LabelFpsTest(10, 10, strconv.Itoa(int(app.FrameCount()) / int(application.Get().RunSeconds())), app)

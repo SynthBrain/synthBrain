@@ -6,6 +6,7 @@ import (
 	"github.com/g3n/engine/light"
 )
 
+// LightsScene add lights 
 func LightsScene(app *application.Application){
 	ambientLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.8)
 	app.Scene().Add(ambientLight)

@@ -26,9 +26,7 @@ import (
 	Рисовать только тех что имеют достаточный уровень активность и окончательно не затухли
 */
 func main() {
-	//принимать в канал указатель *
-	//chImg := make(chan *[640][480]byte)
-
+	
 	fmt.Println("Start NeuroMatrix")
 	app, err := application.Create(application.Options{
 		Title:     "NeuroMatrix",
@@ -54,15 +52,6 @@ func main() {
 	app.Gui().Root().Add(b2)
 	//******************************************************************
 
-	// myDots := 700
-	// for i := 0; i < myDots; i++ {
-	// 	func() {
-	// 		nn := neurons.NewBody(app)
-	// 		nn.CreateBody()
-	// 		nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
-	// 	}()
-	// }
-
 	go func() {
 		myDots := 700
 		var dotlist []neurons.Neuron3DBody
@@ -71,6 +60,7 @@ func main() {
 				nn := neurons.NewBody(app)
 	 			nn.CreateBody()
 				nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+
 				dotlist = append(dotlist, *nn)
 				myDots--
 			}
@@ -105,6 +95,8 @@ func main() {
 
 	//fmt.Printf("app was running for %f \n", application.Get().RunSeconds())
 }
+
+
 // go func() {
 	// 	for {
 	// 		if a, b, c := app.FrameRater().FPS(60); a > 0 && b > 0 && c == true {

@@ -13,6 +13,7 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
+	"time"
 	"math/rand"
 	"synthBrain/neurons"
 	"fmt"
@@ -33,7 +34,6 @@ func main() {
 		Title:     "NeuroMatrix",
 		Width:     1280,
 		Height:    600,
-		TargetFPS: 140,
 	})
 	if err != nil {
 		panic(err)
@@ -43,8 +43,6 @@ func main() {
 	// Create and add a label to the root panel
 	l1 := myGui.LabelFps(10, 10, "240")
 	app.Gui().Root().Add(l1)
-
-	
 
 	// Create and add button 1 to the root panel
 	onOff := false
@@ -56,14 +54,34 @@ func main() {
 	app.Gui().Root().Add(b2)
 	//******************************************************************
 
-	myDots := 700
-	for i := 0; i < myDots; i++ {
-		func() {
-			nn := neurons.NewBody(app)
-			nn.CreateBody()
-			nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
-		}()
-	}
+	// myDots := 700
+	// for i := 0; i < myDots; i++ {
+	// 	func() {
+	// 		nn := neurons.NewBody(app)
+	// 		nn.CreateBody()
+	// 		nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+	// 	}()
+	// }
+
+	go func() {
+		myDots := 700
+		var dotlist []neurons.Neuron3DBody
+		for {
+			if myDots > 0{
+				nn := neurons.NewBody(app)
+	 			nn.CreateBody()
+				nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+				dotlist = append(dotlist, *nn)
+				myDots--
+			}
+			if myDots == 0 {
+				for _, v := range dotlist {
+					v.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+					time.Sleep(time.Millisecond * 10)
+				}
+			}
+		}
+	}()
 
 	//Add lights to the scene
 	levelScene.LightsScene(app)

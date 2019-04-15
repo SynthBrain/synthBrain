@@ -13,9 +13,11 @@ package main
 
 // 3840 * 2160 = 8 294 400
 import (
+	"github.com/g3n/engine/math32"
 	"time"
 	"math/rand"
 	"synthBrain/neurons"
+	
 	"fmt"
 	"synthBrain/levelScene"
 	"synthBrain/myGui"
@@ -26,7 +28,8 @@ import (
 	Рисовать только тех что имеют достаточный уровень активность и окончательно не затухли
 */
 func main() {
-	
+	//IndCh := make(chan int)
+
 	fmt.Println("Start NeuroMatrix")
 	app, err := application.Create(application.Options{
 		Title:     "NeuroMatrix",
@@ -52,26 +55,64 @@ func main() {
 	app.Gui().Root().Add(b2)
 	//******************************************************************
 
+	// Создать и протестировать линии - синапсы
+
 	go func() {
-		myDots := 700
-		var dotlist []neurons.Neuron3DBody
+		myDots := 70
+		var dotlist []*neurons.Neuron3DBody
+		var synList []*neurons.Synapse
 		for {
 			if myDots > 0{
 				nn := neurons.NewBody(app)
 	 			nn.CreateBody()
 				nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+				dotlist = append(dotlist, nn)
 
-				dotlist = append(dotlist, *nn)
+				syn := neurons.NewSynapse(app, nn.GetPosition(), 
+					dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition() , math32.NewColor("LightGrey"))
+				synList = append(synList, syn)
+				//app.Scene().Add(syn)
+				
+
+				// dotlist[len(dotlist)-1].DrawSynapse(nn.GetPosition(),
+				// 	dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition() , math32.NewColor("LightGrey"))
+
+
 				myDots--
 			}
 			if myDots == 0 {
 				for _, v := range dotlist {
 					v.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+					//fmt.Println(v.IndxBody, " ", v.IndxSynapse)
+				
+					// if v.IndxSynapse >= 0{
+					// 	app.Scene().RemoveAt(v.IndxSynapse)
+					// }
+					
+					// IndCh <- v.IndxSynapse
+					
+					// v.DrawSynapse(v.GetPosition(),
+					// 	dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition(), math32.NewColor("LightGrey"))
+					
+					//fmt.Println(app.Scene().ChildIndex(v.Synapse), "Input")
 					time.Sleep(time.Millisecond * 10)
 				}
 			}
 		}
 	}()
+
+	// go func(){
+	// 	for{
+	// 		select{
+	// 		case i := <-IndCh:
+	// 			//app.Scene().RemoveAt(i)
+	// 			fmt.Println(i, "Out")
+	// 		case <-time.After(time.Second):
+	// 			fmt.Println("OutEmpty")
+	// 		}
+	// 	}
+	// }()
+	
 
 	//Add lights to the scene
 	levelScene.LightsScene(app)

@@ -1,4 +1,4 @@
-package levelScene
+package helpers
 
 import (
 	"github.com/g3n/engine/math32"

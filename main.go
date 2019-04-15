@@ -19,7 +19,7 @@ import (
 	"synthBrain/neurons"
 	
 	"fmt"
-	"synthBrain/levelScene"
+	"synthBrain/helpers"
 	"synthBrain/myGui"
 	"github.com/g3n/engine/util/application"
 )
@@ -115,13 +115,13 @@ func main() {
 	
 
 	//Add lights to the scene
-	levelScene.LightsScene(app)
+	helpers.LightsScene(app)
 
 	// Add an axis helper to the scene
-	levelScene.AxisHelper(0.5, app)
+	helpers.AxisHelper(0.5, app)
 
 	// Add an grid helper to the scene
-	levelScene.GridHelper(10, app)
+	helpers.GridHelper(10, app)
 
 	// Add camera to the scene
 	app.CameraPersp().SetPosition(15, 15, 15)

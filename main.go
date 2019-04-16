@@ -59,6 +59,7 @@ func main() {
 
 	go func() {
 		myDots := 70
+		// заменить на мапы 
 		var dotlist []*neurons.Neuron3DBody
 		var synList []*neurons.Synapse
 		for {

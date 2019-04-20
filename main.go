@@ -58,72 +58,21 @@ func main() {
 	// Создать и протестировать линии - синапсы
 
 	go func() {
-		myDots := 70
-		// заменить на мапы 
-		//var dotlist []*neurons.Neuron3DBody
-		//var synList []*neurons.Synapse
+		myDots := 0
+		maxD := 700
 		dotlist := make(map[int]*neurons.Neuron3DBody)
-		synlist := make(map[int]*neurons.Synapse)
+
 		for {
-			if myDots > 0{
-				nn := neurons.NewBody(app)
-	 			nn.CreateBody()
-				nn.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
-				//dotlist = append(dotlist, nn)
-				dotlist[app.Scene().ChildIndex(nn.Mesh)] = nn
-
-				synlist[app.Scene().ChildIndex(nn.Mesh)] = neurons.NewSynapse(app, nn.GetPosition(), 
-					*math32.NewVector3(5.0, 5.0, 5.0),
-				 	math32.NewColor("LightGrey"))
-					//dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition() , math32.NewColor("LightGrey"))
-
-				//synList = append(synList, syn)
-				//app.Scene().Add(syn)
-				
-
-				// dotlist[len(dotlist)-1].DrawSynapse(nn.GetPosition(),
-				// 	dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition() , math32.NewColor("LightGrey"))
-
-
-				myDots--
+			if myDots < maxD {
+				dotlist[myDots] = neurons.NewBody(app, math32.NewColor("White"))
+				dotlist[myDots].CreateBody()
+				dotlist[myDots].SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
+				myDots++
+				//fmt.Println(len(dotlist), myDots)
 			}
-			if myDots == 0 {
-				for key, v := range dotlist {
+			if myDots == maxD {
+				for _, v := range dotlist {
 					v.SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
-					//fmt.Println(v.IndxBody, " ", v.IndxSynapse)
-
-					if v2, ok := synlist[key]; ok{
-						//app.Scene().Remove(synlist[key]) //At(app.Scene().ChildIndex(synlist[key]))
-						if app.Scene().Remove(synlist[key]){
-							//delete(synlist, key)
-							fmt.Println("Start ", key, &v2)
-							synlist[key] = neurons.NewSynapse(app, v.GetPosition(), 
-																*math32.NewVector3(5.0, 5.0, 5.0),
-						 										math32.NewColor("LightGrey"))
-							fmt.Println("Stop ", key)
-						}
-					}
-					fmt.Println("1 ")
-				
-					// if v.IndxSynapse >= 0{
-					// 	app.Scene().RemoveAt(v.IndxSynapse)
-					// }
-					
-					// IndCh <- v.IndxSynapse
-					
-					// v.DrawSynapse(v.GetPosition(),
-					// 	dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition(), math32.NewColor("LightGrey"))
-					
-					//fmt.Println(app.Scene().ChildIndex(v.Synapse), "Input")
-					
-					//dotlist[rand.Int31n(int32(len(dotlist)))].GetPosition() , math32.NewColor("LightGrey"))
-					// if _, ok := synlist[key]; !ok{
-						
-					// 	synlist[key] = neurons.NewSynapse(app, v.GetPosition(), 
-					// 		*math32.NewVector3(5.0, 5.0, 5.0),
-					// 	 	math32.NewColor("LightGrey"))
-					// 	fmt.Println("Stop ", key)	
-					// }
 					time.Sleep(time.Millisecond * 10)
 					
 				}
@@ -131,19 +80,7 @@ func main() {
 		}
 	}()
 
-	// go func(){
-	// 	for{
-	// 		select{
-	// 		case i := <-IndCh:
-	// 			//app.Scene().RemoveAt(i)
-	// 			fmt.Println(i, "Out")
-	// 		case <-time.After(time.Second):
-	// 			fmt.Println("OutEmpty")
-	// 		}
-	// 	}
-	// }()
 	
-
 	//Add lights to the scene
 	helpers.LightsScene(app)
 

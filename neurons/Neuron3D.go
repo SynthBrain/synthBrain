@@ -23,10 +23,10 @@ type Neuron3DBody struct{
 }
 
 // NewBody - constructor
-func NewBody(app *application.Application) *Neuron3DBody{
+func NewBody(app *application.Application, color *math32.Color) *Neuron3DBody{
 	return &Neuron3DBody{
 		Geom: 	geometry.NewCircle(0, 3),
-		Mat: 	material.NewPhong(math32.NewColor("White")),
+		Mat: 	material.NewPhong(color),
 		app:    app,
 	}
 }

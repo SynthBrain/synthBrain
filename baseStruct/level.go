@@ -72,18 +72,6 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 	return l
 }
 
-// Restart the level
-func (l *Level) Restart(playSound bool) {
-
-	//log.Debug("Restart")
-
-	l.synB.RestartButton.SetEnabled(false)
-
-	//for i, neuron := range l.neurons {
-	//	l.SetPosition(neuron, l.data.neuronsInit[i])
-	//}
-}
-
 // SetPosition moves an object in the data grid along with its node to the desired position
 func (l *Level) SetPosition(obj interfaces.IBaseObj, dest math32.Vector3) {
 	//l.data.Set(obj.Location(), nil)
@@ -94,12 +82,15 @@ func (l *Level) SetPosition(obj interfaces.IBaseObj, dest math32.Vector3) {
 
 // Update updates all ongoing animations for the level
 func (l *Level) Update(timeDelta float64) {
+	l.neurons[rand.Int31n(70)].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
+		float32(rand.Int31n(20)),
+		float32(rand.Int31n(20))))
 
-	for i := 0; i < 70; i++ {
-		l.neurons[i].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
-			float32(rand.Int31n(20)),
-			float32(rand.Int31n(20))))
-		//time.Sleep(time.Millisecond * 10)
-		//fmt.Println(i," ", l.neurons[i].GetLocation())
-	}
+	//for i := 0; i < 70; i++ {
+	//	l.neurons[i].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
+	//		float32(rand.Int31n(20)),
+	//		float32(rand.Int31n(20))))
+	//	//time.Sleep(time.Millisecond * 10)
+	//	//fmt.Println(i," ", l.neurons[i].GetLocation())
+	//}
 }

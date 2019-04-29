@@ -15,6 +15,7 @@ package main
 import (
 	"flag"
 	"github.com/SynthBrain/synthBrain/baseStruct"
+	"github.com/SynthBrain/synthBrain/myGui"
 	"github.com/g3n/engine/camera"
 	"github.com/g3n/engine/camera/control"
 	"github.com/g3n/engine/core"
@@ -109,22 +110,20 @@ func main() {
 	synB.Root = gui.NewRoot(synB.Gs, synB.Win)
 	synB.Root.SetSize(float32(width), float32(height))
 
-	// Subscribe to window resize events. When the window is resized:
-	// - Update the viewport size
-	// - Update the root panel size
-	// - Update the camera aspect ratio
-	synB.Win.Subscribe(window.OnWindowSize, func(evname string, ev interface{}) {
-		width, height := synB.Win.Size()
-		synB.Gs.Viewport(0, 0, int32(width), int32(height))
-		synB.Root.SetSize(float32(width), float32(height))
-		aspect := float32(width) / float32(height)
-		synB.Camera.SetAspect(aspect)
-	})
+	//add GUI*********************************************************
+	// Create and add a label to the root panel
+	l1 := myGui.LabelFps(10, 10, "240")
+	synB.Root.Add(l1)
 
-	// Subscribe window to events
-	synB.Win.Subscribe(window.OnKeyDown, synB.OnKey)
-	synB.Win.Subscribe(window.OnMouseUp, synB.OnMouse)
-	synB.Win.Subscribe(window.OnMouseDown, synB.OnMouse)
+	// Create and add button 1 to the root panel
+	onOff := false
+	b1 := myGui.WebCam(10, 40, &onOff)
+	synB.Root.Add(b1)
+
+	// Create and add exit button to the root panel
+	b2 := myGui.Exit(10, 70, &onOff, synB.Win)
+	synB.Root.Add(b2)
+	//****************************************************************
 
 	// Creates a renderer and adds default shaders
 	synB.Renderer = renderer.NewRenderer(synB.Gs)
@@ -170,23 +169,15 @@ func main() {
 	synB.LoadSkyBox()
 	synB.LoadLevels()
 
-	synB.Win.Subscribe(window.OnCursor, synB.OnCursor)
-
 	size := 10
 	gridHelp := graphic.NewGridHelper(float32(size), 1, math32.NewColor("LightGrey"))
 	gridHelp.SetPosition(float32(size/2), -0.2, float32(size/2))
 	synB.Scene.Add(gridHelp)
 
-	//if synB.UserData.LastUnlockedLevel == len(synB.Levels) {
-	//	synB.TitleImage.SetImage(gui.ButtonDisabled, synB.DataDir + "/assets/title3_completed.png")
-	//}
-
 	// Done Loading - hide the loading label, show the menu, and initialize the level
 	//synB.LoadingLabel.SetVisible(false)
 
-	//synB.Menu.Add(synB.Main)
-	synB.InitLevel(0) //(synB.userData.LastLevel)
-	//synB.gopherLocked = true
+	synB.InitLevel(0)
 
 	now := time.Now()
 	newNow := time.Now()

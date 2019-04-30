@@ -7,6 +7,7 @@ import (
 )
 
 var OnOff = false
+var TrFlag = false
 
 /*
 Тут создадим обьект
@@ -63,11 +64,12 @@ func StartWebCam() { //(app *application.Application) {
 		//ch <- massVis2
 
 		//write jpg file
-		//gocv.IMWrite("C:\Users\synth\go\src\file.jpg", img)
+		//gocv.IMWrite("C:\Users\synth\go\src\github\SynthBrain\synthBrain\file.jpg", img)
 
 		//window.WaitKey(1)
 		if OnOff == true {
-			fmt.Println("Stop WebCam REALLY")
+			fmt.Println("Thread WebCam DESTROY")
+			TrFlag = true
 			break
 		}
 	}

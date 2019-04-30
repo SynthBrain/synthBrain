@@ -1,16 +1,5 @@
 package main
 
-// // Create a tic-tac-toe board.
-// board := [][]string{
-// 	[]string{"_", "_", "_"},
-// 	[]string{"_", "_", "_"},
-// 	[]string{"_", "_", "_"},
-// }
-
-// for i := 0; i < len(board); i++ {
-// 	fmt.Printf("%s\n", strings.Join(board[i], " "))
-// }
-
 // 3840 * 2160 = 8 294 400
 import (
 	"flag"
@@ -73,9 +62,6 @@ func main() {
 		}
 	}
 
-	// Load user data from file
-	//synB.userData = NewUserData(synB.dataDir)
-
 	// Get the window manager
 	var err error
 	synB.Wmgr, err = window.Manager("glfw")
@@ -84,7 +70,7 @@ func main() {
 	}
 
 	// Create window and OpenGL context
-	synB.Win, err = synB.Wmgr.CreateWindow(900, 640, "SynthBrain", false) //synB.userData.FullScreen
+	synB.Win, err = synB.Wmgr.CreateWindow(900, 640, "SynthBrain", false)
 	if err != nil {
 		panic(err)
 	}
@@ -112,17 +98,17 @@ func main() {
 
 	//add GUI*********************************************************
 	// Create and add a label to the root panel
-	l1 := myGui.LabelFps(10, 10, "240")
-	synB.Root.Add(l1)
+	synB.LabelFps = myGui.LabelFps(10, 10, "240")
+	synB.Root.Add(synB.LabelFps)
 
 	// Create and add button 1 to the root panel
 	onOff := false
-	b1 := myGui.WebCam(10, 40, &onOff)
-	synB.Root.Add(b1)
+	synB.WebCam = myGui.WebCam(10, 40, &onOff)
+	synB.Root.Add(synB.WebCam)
 
 	// Create and add exit button to the root panel
-	b2 := myGui.Exit(10, 70, &onOff, synB.Win)
-	synB.Root.Add(b2)
+	synB.Exit = myGui.Exit(10, 70, &onOff, synB.Win)
+	synB.Root.Add(synB.Exit)
 	//****************************************************************
 
 	// Creates a renderer and adds default shaders
@@ -166,7 +152,7 @@ func main() {
 	//synB.SetupGui(width, height)
 	synB.RenderFrame()
 
-	synB.LoadSkyBox()
+	//synB.LoadSkyBox()
 	synB.LoadLevels()
 
 	size := 10
@@ -182,7 +168,6 @@ func main() {
 	now := time.Now()
 	newNow := time.Now()
 	log.Info("Starting Render Loop")
-
 	// Start the render loop
 	for !synB.Win.ShouldClose() {
 

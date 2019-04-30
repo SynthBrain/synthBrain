@@ -23,10 +23,12 @@ type SynthBrain struct {
 	OrbitControl *control.OrbitControl
 	DataDir      string
 
-	Root     *gui.Root
-	Menu     *gui.Panel
-	Main     *gui.Panel
-	Controls *gui.Panel
+	Restart  *gui.Button
+	Exit     *gui.Button
+	WebCam   *gui.Button
+	LabelFps *gui.Label
+
+	Root *gui.Root
 
 	StepDelta *math32.Vector2
 
@@ -123,3 +125,14 @@ func (synB *SynthBrain) RenderFrame() {
 		synB.Win.SwapBuffers()
 	}
 }
+
+// // Create a tic-tac-toe board.
+// board := [][]string{
+// 	[]string{"_", "_", "_"},
+// 	[]string{"_", "_", "_"},
+// 	[]string{"_", "_", "_"},
+// }
+
+// for i := 0; i < len(board); i++ {
+// 	fmt.Printf("%s\n", strings.Join(board[i], " "))
+// }

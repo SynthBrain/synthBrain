@@ -5,6 +5,7 @@ import (
 	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/window"
+	"time"
 )
 
 func WebCam(posX, posY float32, onOff *bool) *gui.Button {
@@ -19,8 +20,9 @@ func WebCam(posX, posY float32, onOff *bool) *gui.Button {
 			go vision.StartWebCam()
 			*onOff = true
 		} else {
-			fmt.Println("stop WebCam")
+			//fmt.Println("stop WebCam")
 			vision.OnOff = true
+			vision.TrFlag = false
 			*onOff = false
 		}
 	})
@@ -31,17 +33,22 @@ func Exit(posX, posY float32, onOff *bool, win window.IWindow) *gui.Button {
 	button := *gui.NewButton("Exit ")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
-		fmt.Println("Application Close")
-		defer closeWebCam(onOff)
-		win.SetShouldClose(true)
+		//fmt.Println("Application Close")
+		closeWebCam(onOff)
+		time.After(time.Second)
+		if vision.OnOff && vision.TrFlag {
+			fmt.Println("Application Close")
+			win.SetShouldClose(true)
+		}
 	})
+
 	return &button
 }
 
 func closeWebCam(onOff *bool) {
-	if *onOff == true {
-		fmt.Println("stop WebCam")
+	if *onOff {
+		//fmt.Println("stop WebCam")
 		vision.OnOff = true
-		//onOff = false
+		*onOff = false
 	}
 }

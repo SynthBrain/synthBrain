@@ -35,7 +35,7 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 
 	//log.Debug("Starting NewLevel loop")
 
-	l.sizeListNeurons = 30000
+	l.sizeListNeurons = 10000
 	fmt.Println("Start new scene")
 	l.neurons = make([]*Neuron3D, l.sizeListNeurons)
 	//if obj != nil {
@@ -62,7 +62,7 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 
 		l.neurons[i].SetMeshPoint(dot) //, light)
 
-		l.scene.Add(l.neurons[i].point)
+		l.scene.Add(l.neurons[i].dot)
 
 		//if i >= 1{
 		//	meshSynapse := ls.MakeSynapseLine(l.neurons[i].mesh.Position(), l.neurons[i-1].mesh.Position(), math32.NewColor("White"))
@@ -106,7 +106,7 @@ func (l *Level) Update(timeDelta float64) {
 }
 
 func (l *Level) NeuronGoThere(i int) {
-	l.neurons[i].point.SetPositionVec(math32.NewVector3(float32(rand.Int31n(100)),
+	l.neurons[i].dot.SetPositionVec(math32.NewVector3(float32(rand.Int31n(100)),
 		float32(rand.Int31n(100)),
 		float32(rand.Int31n(100))))
 }

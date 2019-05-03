@@ -27,8 +27,8 @@ func (bo *BaseObj) SetLocation(vec math32.Vector3) {
 // Neuron3D
 type Neuron3D struct {
 	BaseObj
-	point *graphic.Points
-	mesh  *graphic.Mesh
+	dot  *graphic.Points
+	mesh *graphic.Mesh
 }
 
 func NewNeuron3D(vec math32.Vector3) *Neuron3D {
@@ -38,7 +38,7 @@ func NewNeuron3D(vec math32.Vector3) *Neuron3D {
 }
 
 func (n *Neuron3D) SetMeshPoint(point *graphic.Points) { //, light *light.Point) {
-	n.point = point
+	n.dot = point
 	n.node = &point.Node
 	point.SetPositionVec(&n.vec)
 }

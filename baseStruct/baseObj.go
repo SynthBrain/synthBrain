@@ -3,7 +3,6 @@ package baseStruct
 import (
 	"github.com/g3n/engine/core"
 	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/light"
 	"github.com/g3n/engine/math32"
 )
 
@@ -28,8 +27,8 @@ func (bo *BaseObj) SetLocation(vec math32.Vector3) {
 // Neuron3D
 type Neuron3D struct {
 	BaseObj
-	mesh  *graphic.Mesh
-	light *light.Point
+	mesh *graphic.Points
+	//light *light.Point
 }
 
 func NewNeuron3D(vec math32.Vector3) *Neuron3D {
@@ -38,18 +37,18 @@ func NewNeuron3D(vec math32.Vector3) *Neuron3D {
 	return n
 }
 
-func (n *Neuron3D) SetMeshAndLight(mesh *graphic.Mesh, light *light.Point) {
+func (n *Neuron3D) SetMeshAndLight(mesh *graphic.Points) { //, light *light.Point) {
 	n.mesh = mesh
 	n.node = &mesh.Node
 	mesh.SetPositionVec(&n.vec)
-	n.light = light
-	n.node.Add(light)
+	//n.light = light
+	//n.node.Add(light)
 }
 
 // Synapse
 type Synapse struct {
 	BaseObj
-	mesh *graphic.Mesh
+	mesh *graphic.Lines
 }
 
 func NewSynapse(vec math32.Vector3) *Synapse {
@@ -58,7 +57,7 @@ func NewSynapse(vec math32.Vector3) *Synapse {
 	return s
 }
 
-func (s *Synapse) SetMesh(mesh *graphic.Mesh) {
+func (s *Synapse) SetMesh(mesh *graphic.Lines) {
 	s.mesh = mesh
 	s.node = &mesh.Node
 	mesh.SetPositionVec(&s.vec)

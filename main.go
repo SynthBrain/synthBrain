@@ -96,6 +96,15 @@ func main() {
 	synB.Root = gui.NewRoot(synB.Gs, synB.Win)
 	synB.Root.SetSize(float32(width), float32(height))
 
+	// Update window if resize
+	synB.Win.Subscribe(window.OnWindowSize, func(evname string, ev interface{}) {
+		width, height := synB.Win.Size()
+		synB.Gs.Viewport(0, 0, int32(width), int32(height))
+		synB.Root.SetSize(float32(width), float32(height))
+		aspect := float32(width) / float32(height)
+		synB.Camera.SetAspect(aspect)
+	})
+
 	//add GUI*********************************************************
 	// Create and add a label to the root panel
 	synB.LabelFps = myGui.LabelFps(10, 10, "240")

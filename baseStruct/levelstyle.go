@@ -2,6 +2,7 @@ package baseStruct
 
 import (
 	"github.com/g3n/engine/geometry"
+	"github.com/g3n/engine/gls"
 	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
@@ -15,8 +16,10 @@ type LevelStyle struct {
 	materialWhite *material.Phong
 	materialBlack *material.Phong
 
-	MakeWhiteNeuron func() *graphic.Mesh
-	MakeBlackNeuron func() *graphic.Mesh
+	materialSynapse *material.Basic
+
+	MakeWhiteNeuron func() *graphic.Points
+	MakeBlackNeuron func() *graphic.Points
 }
 
 // NewBaseStyle
@@ -43,15 +46,52 @@ func NewBaseStyle(dataDir string) *LevelStyle {
 	s.materialBlack = material.NewPhong(math32.NewColor("black"))
 	//s.materialBlack.AddTexture(newTexture(dataDir + "/assets/black.png"))
 
+	s.materialSynapse = material.NewBasic()
+
 	// Create functions that return a cube mesh using the provided material, reusing the same cube geometry
 
-	sharedCubeGeom := geometry.NewCube(1)
-	makeObjWithMaterial := func(mat *material.Phong) func() *graphic.Mesh {
-		return func() *graphic.Mesh { return graphic.NewMesh(sharedCubeGeom, mat) }
+	//sharedCubeGeom := geometry.NewCube(0.1)
+
+	//*****************************Neuron*******************************
+	sharedCircleGeom := geometry.NewCircle(0, 3)
+	makeObjWithMaterial := func(mat *material.Phong) func() *graphic.Points {
+		return func() *graphic.Points { return graphic.NewPoints(sharedCircleGeom, mat) }
 	}
 
 	s.MakeWhiteNeuron = makeObjWithMaterial(s.materialWhite)
 	s.MakeBlackNeuron = makeObjWithMaterial(s.materialBlack)
 
 	return s
+}
+
+func (s *LevelStyle) MakeSynapseLine(start math32.Vector3, stop math32.Vector3, color *math32.Color) func() *graphic.Lines {
+
+	makeSynapseWithMaterial := func(mat *material.Basic) func() *graphic.Lines {
+		return func() *graphic.Lines {
+			return graphic.NewLines(s.synapseBody(geometry.NewGeometry(), start, stop, color), mat)
+		}
+	}
+	return makeSynapseWithMaterial(s.materialSynapse)
+}
+
+func (s *LevelStyle) synapseBody(geom *geometry.Geometry,
+	start math32.Vector3,
+	stop math32.Vector3,
+	color *math32.Color) *geometry.Geometry {
+
+	vertices := math32.NewArrayF32(0, 6)
+	vertices.Append(
+		start.X, start.Y, start.Z,
+		stop.X, stop.Y, stop.Z,
+	)
+
+	colors := math32.NewArrayF32(0, 6)
+	colors.Append(
+		color.R, color.G, color.B,
+		color.R, color.G, color.B,
+	)
+	geom.AddVBO(gls.NewVBO(vertices).AddAttrib(gls.VertexPosition))
+	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+
+	return geom
 }

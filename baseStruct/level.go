@@ -18,7 +18,8 @@ type Level struct {
 
 	style *LevelStyle
 
-	neurons []*Neuron3D
+	neurons         []*Neuron3D
+	sizeListNeurons int
 }
 
 // NewLevel - new Level object
@@ -34,8 +35,9 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 
 	//log.Debug("Starting NewLevel loop")
 
+	l.sizeListNeurons = 1000
 	fmt.Println("Start new scene")
-	l.neurons = make([]*Neuron3D, 100)
+	l.neurons = make([]*Neuron3D, l.sizeListNeurons)
 	//if obj != nil {
 	//	switch obj := obj.(type) {
 	//	case *Neuron3D:
@@ -49,19 +51,22 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 	//
 	//	}
 	//}
-	for i := 0; i < 70; i++ {
-		l.neurons[i] = NewNeuron3D(*math32.NewVector3(float32(rand.Int31n(20)),
-			float32(rand.Int31n(20)),
-			float32(rand.Int31n(20))))
+	for i := 0; i < l.sizeListNeurons; i++ {
+		l.neurons[i] = NewNeuron3D(*math32.NewVector3(float32(2+i), float32(2+i), float32(2+i)))
 
 		//l.neurons = append(l.neurons, obj)
 
 		mesh := ls.MakeWhiteNeuron()
-		light := light.NewPoint(l.style.activeOff, 1.0)
+		//light := light.NewPoint(l.style.activeOff, 1.0)
 
-		l.neurons[i].SetMeshAndLight(mesh, light)
+		l.neurons[i].SetMeshAndLight(mesh) //, light)
 
 		l.scene.Add(l.neurons[i].mesh)
+
+		//if i >= 1{
+		//	meshSynapse := ls.MakeSynapseLine(l.neurons[i].mesh.Position(), l.neurons[i-1].mesh.Position(), math32.NewColor("White"))
+		//	l.scene.Add(meshSynapse())
+		//}
 	}
 
 	// Add a single point light above the level
@@ -82,9 +87,9 @@ func (l *Level) SetPosition(obj interfaces.IBaseObj, dest math32.Vector3) {
 
 // Update updates all ongoing animations for the level
 func (l *Level) Update(timeDelta float64) {
-	l.neurons[rand.Int31n(70)].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
-		float32(rand.Int31n(20)),
-		float32(rand.Int31n(20))))
+	//l.neurons[rand.Int31n(7000)].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
+	//	float32(rand.Int31n(20)),
+	//	float32(rand.Int31n(20))))
 
 	//for i := 0; i < 70; i++ {
 	//	l.neurons[i].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(20)),
@@ -93,4 +98,14 @@ func (l *Level) Update(timeDelta float64) {
 	//	//time.Sleep(time.Millisecond * 10)
 	//	//fmt.Println(i," ", l.neurons[i].GetLocation())
 	//}
+
+	for i := 0; i < l.sizeListNeurons; i++ {
+		go l.NeuronGoThere(i)
+	}
+}
+
+func (l *Level) NeuronGoThere(i int) {
+	l.neurons[i].mesh.SetPositionVec(math32.NewVector3(float32(rand.Int31n(100)),
+		float32(rand.Int31n(100)),
+		float32(rand.Int31n(100))))
 }

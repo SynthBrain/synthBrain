@@ -13,13 +13,19 @@ type LevelStyle struct {
 	activeOn  *math32.Color
 	activeOff *math32.Color
 
-	materialWhite *material.Phong
-	materialBlack *material.Phong
+	materialWhite    *material.Phong
+	materialBlack    *material.Phong
+	materialDotRed   *material.Phong
+	materialDotWhite *material.Phong
 
 	materialSynapse *material.Basic
 
-	MakeWhiteNeuron func() *graphic.Points
-	MakeBlackNeuron func() *graphic.Points
+	MakeWhiteCube func() *graphic.Mesh
+	MakeBlackCube func() *graphic.Mesh
+
+	MakeWhiteDot      func() *graphic.Points
+	MakeSuperWhiteDot func() *graphic.Points
+	MakeRedDot        func() *graphic.Points
 }
 
 // NewBaseStyle
@@ -46,20 +52,35 @@ func NewBaseStyle(dataDir string) *LevelStyle {
 	s.materialBlack = material.NewPhong(math32.NewColor("black"))
 	//s.materialBlack.AddTexture(newTexture(dataDir + "/assets/black.png"))
 
+	//**********************************************************************************
 	s.materialSynapse = material.NewBasic()
+	s.materialDotRed = material.NewPhong(math32.NewColor("Red"))
+	s.materialDotWhite = material.NewPhong(math32.NewColor("White"))
 
 	// Create functions that return a cube mesh using the provided material, reusing the same cube geometry
-
-	//sharedCubeGeom := geometry.NewCube(0.1)
-
-	//*****************************Neuron*******************************
-	sharedCircleGeom := geometry.NewCircle(0, 3)
-	makeObjWithMaterial := func(mat *material.Phong) func() *graphic.Points {
-		return func() *graphic.Points { return graphic.NewPoints(sharedCircleGeom, mat) }
+	//*****************************Cube*******************************
+	sharedCubeGeom := geometry.NewCube(0.5)
+	makeObjWithMaterial := func(mat *material.Phong) func() *graphic.Mesh {
+		return func() *graphic.Mesh { return graphic.NewMesh(sharedCubeGeom, mat) }
 	}
 
-	s.MakeWhiteNeuron = makeObjWithMaterial(s.materialWhite)
-	s.MakeBlackNeuron = makeObjWithMaterial(s.materialBlack)
+	s.MakeWhiteCube = makeObjWithMaterial(s.materialWhite)
+	s.MakeBlackCube = makeObjWithMaterial(s.materialBlack)
+
+	//*****************************Dots*******************************
+	sharedDotGeom := s.neuronGeom()
+	makeDotWithMaterial := func(mat *material.Phong) func() *graphic.Points {
+		return func() *graphic.Points { return graphic.NewPoints(sharedDotGeom, mat) }
+	}
+	s.MakeWhiteDot = makeDotWithMaterial(s.materialDotWhite)
+	s.MakeRedDot = makeDotWithMaterial(s.materialDotRed)
+
+	//****************************SuperWhiteDots**************************
+	sharedDotGeomSuperWhite := s.neuronGeom()
+	makeDotWithMaterialWhite := func(mat *material.Basic) func() *graphic.Points {
+		return func() *graphic.Points { return graphic.NewPoints(sharedDotGeomSuperWhite, mat) }
+	}
+	s.MakeSuperWhiteDot = makeDotWithMaterialWhite(s.materialSynapse)
 
 	return s
 }
@@ -68,13 +89,13 @@ func (s *LevelStyle) MakeSynapseLine(start math32.Vector3, stop math32.Vector3, 
 
 	makeSynapseWithMaterial := func(mat *material.Basic) func() *graphic.Lines {
 		return func() *graphic.Lines {
-			return graphic.NewLines(s.synapseBody(geometry.NewGeometry(), start, stop, color), mat)
+			return graphic.NewLines(s.synapseGeom(geometry.NewGeometry(), start, stop, color), mat)
 		}
 	}
 	return makeSynapseWithMaterial(s.materialSynapse)
 }
 
-func (s *LevelStyle) synapseBody(geom *geometry.Geometry,
+func (s *LevelStyle) synapseGeom(geom *geometry.Geometry,
 	start math32.Vector3,
 	stop math32.Vector3,
 	color *math32.Color) *geometry.Geometry {
@@ -89,6 +110,26 @@ func (s *LevelStyle) synapseBody(geom *geometry.Geometry,
 	colors.Append(
 		color.R, color.G, color.B,
 		color.R, color.G, color.B,
+	)
+	geom.AddVBO(gls.NewVBO(vertices).AddAttrib(gls.VertexPosition))
+	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+
+	return geom
+}
+
+func (s *LevelStyle) neuronGeom() *geometry.Geometry {
+
+	geom := geometry.NewGeometry()
+	vertices := math32.NewArrayF32(0, 3)
+	vertices.Append(
+		0, 0, 0,
+		//stop.X, stop.Y, stop.Z,
+	)
+
+	colors := math32.NewArrayF32(0, 3)
+	colors.Append(
+		1, 1, 1,
+		//color.R, color.G, color.B,
 	)
 	geom.AddVBO(gls.NewVBO(vertices).AddAttrib(gls.VertexPosition))
 	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))

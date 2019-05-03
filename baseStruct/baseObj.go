@@ -27,8 +27,8 @@ func (bo *BaseObj) SetLocation(vec math32.Vector3) {
 // Neuron3D
 type Neuron3D struct {
 	BaseObj
-	mesh *graphic.Points
-	//light *light.Point
+	point *graphic.Points
+	mesh  *graphic.Mesh
 }
 
 func NewNeuron3D(vec math32.Vector3) *Neuron3D {
@@ -37,12 +37,16 @@ func NewNeuron3D(vec math32.Vector3) *Neuron3D {
 	return n
 }
 
-func (n *Neuron3D) SetMeshAndLight(mesh *graphic.Points) { //, light *light.Point) {
+func (n *Neuron3D) SetMeshPoint(point *graphic.Points) { //, light *light.Point) {
+	n.point = point
+	n.node = &point.Node
+	point.SetPositionVec(&n.vec)
+}
+
+func (n *Neuron3D) SetMesh(mesh *graphic.Mesh) {
 	n.mesh = mesh
 	n.node = &mesh.Node
 	mesh.SetPositionVec(&n.vec)
-	//n.light = light
-	//n.node.Add(light)
 }
 
 // Synapse
@@ -57,7 +61,7 @@ func NewSynapse(vec math32.Vector3) *Synapse {
 	return s
 }
 
-func (s *Synapse) SetMesh(mesh *graphic.Lines) {
+func (s *Synapse) SetMeshLines(mesh *graphic.Lines) {
 	s.mesh = mesh
 	s.node = &mesh.Node
 	mesh.SetPositionVec(&s.vec)

@@ -85,7 +85,6 @@ func ImgToDataSlice(img image.Image) [][]byte {
 		data[y] = make([]byte, bounds.Size().X) // create 2D slice size rows
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, _ := img.At(x, y).RGBA()
-			//data[i][j] = byte((r + g + b) / 3)
 			data[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 		}
 	}

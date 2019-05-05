@@ -5,6 +5,7 @@ import (
 	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/window"
+	"time"
 )
 
 func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
@@ -32,7 +33,8 @@ func Exit(posX, posY float32, onOff *bool, win window.IWindow, chFlag chan bool)
 		if *onOff {
 			closeWebCam(onOff, chFlag)
 			fmt.Println("Application Close")
-			//win.SetShouldClose(true)
+			time.Sleep(time.Second)
+			win.SetShouldClose(true)
 		} else {
 			fmt.Println("Application Close")
 			win.SetShouldClose(true)

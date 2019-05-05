@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/SynthBrain/synthBrain/baseStruct"
 	"github.com/SynthBrain/synthBrain/myGui"
+	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/camera"
 	"github.com/g3n/engine/camera/control"
 	"github.com/g3n/engine/core"
@@ -185,6 +186,7 @@ func main() {
 		now = newNow
 		//fmt.Println(now)
 
+		vision.ReadImg(synB.DataDir)
 		synB.Update(timeDelta.Seconds())
 		synB.RenderFrame()
 	}

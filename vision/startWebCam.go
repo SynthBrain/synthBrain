@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"gocv.io/x/gocv"
 	"image"
+	"log"
+	"os"
 )
 
 // StartWebCam
@@ -60,6 +62,20 @@ func StartWebCam(chFlag chan bool) {
 	}
 }
 
+func ReadImg(dataDir string) {
+	dataDir = dataDir + "/assets/0.jpg"
+
+	reader, err := os.Open(dataDir)
+	m, _, err := image.Decode(reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer reader.Close()
+
+	Print2DSlice(ImgToDataSlice(m))
+	fmt.Println()
+}
+
 func ImgToDataSlice(img image.Image) [][]byte {
 	bounds := img.Bounds()
 
@@ -76,24 +92,10 @@ func ImgToDataSlice(img image.Image) [][]byte {
 }
 
 func Print2DSlice(data [][]byte) {
-	for i := 0; i < len(data[i]); i++ {
-		for j := 0; j < len(data[j]); j++ {
-			fmt.Print(data[i][j], " ")
+	for i := 0; i < len(data); i++ {
+		for j := 0; j < len(data[i]); j++ {
+			fmt.Print(data[j][i], " ")
 		}
 		fmt.Println()
 	}
 }
-
-//func myVision(img image.Image) []byte {
-//	bounds := img.Bounds()
-//	x := bounds.Dx()
-//	y := bounds.Dy()
-//	data := make([]byte, 0, x*y*3)
-//	for j := bounds.Min.Y; j < bounds.Max.Y; j++ {
-//		for i := bounds.Min.X; i < bounds.Max.X; i++ {
-//			r, g, b, _ := img.At(i, j).RGBA()
-//			data = append(data, byte(b>>8), byte(g>>8), byte(r>>8))
-//		}
-//	}
-//	return data
-//}

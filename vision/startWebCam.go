@@ -48,14 +48,12 @@ func StartWebCam(chFlag chan bool) {
 		fmt.Println(imgVision.Bounds().Size())
 
 		//write jpg file
-		//gocv.IMWrite("C:\Users\synth\go\src\github\SynthBrain\synthBrain\file.jpg", img)
+		//gocv.IMWrite("C:\Users\synth\go\src\github\SynthBrain\synthBrain\assets\webCam.jpg", img)
 
 		//window.WaitKey(1)
-		//if OnOff == true {
 		if len(chFlag) > 0 {
 			if ok := <-chFlag; ok {
 				fmt.Println("Thread WebCam Close")
-				//TrFlag = true
 				break
 			}
 		}

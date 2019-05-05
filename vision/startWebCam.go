@@ -6,18 +6,8 @@ import (
 	"image"
 )
 
-var OnOff = false
-var TrFlag = false
-
-/*
-Тут создадим обьект
-инициализируем для начала в мейне(потом в спец пакете)
-тут будет создан канал в который будем ложить двумерный массив изображения
-а в мейне читать его - присваивать массиву представителей которые будем выставлять с координатами
-*/
-
-//func StartWebCam(ch chan<- *[640][480]byte) {
-func StartWebCam() { //(app *application.Application) {
+// StartWebCam
+func StartWebCam(chFlag chan bool) {
 	// set to use a video capture device 0
 	deviceID := 0
 	// open webcam
@@ -43,8 +33,6 @@ func StartWebCam() { //(app *application.Application) {
 	}
 	//imgVision.Bounds().
 
-	//var massVis [640][480]byte
-
 	fmt.Printf("start reading camera device: %v\n", deviceID)
 	for {
 		if ok := webcam.Read(&img); !ok {
@@ -59,18 +47,17 @@ func StartWebCam() { //(app *application.Application) {
 
 		fmt.Println(imgVision.Bounds().Size())
 
-		//massVis = massiveImg(imgVision)
-		//massVis2 := &massVis
-		//ch <- massVis2
-
 		//write jpg file
 		//gocv.IMWrite("C:\Users\synth\go\src\github\SynthBrain\synthBrain\file.jpg", img)
 
 		//window.WaitKey(1)
-		if OnOff == true {
-			fmt.Println("Thread WebCam DESTROY")
-			TrFlag = true
-			break
+		//if OnOff == true {
+		if len(chFlag) > 0 {
+			if ok := <-chFlag; ok {
+				fmt.Println("Thread WebCam Close")
+				//TrFlag = true
+				break
+			}
 		}
 	}
 }

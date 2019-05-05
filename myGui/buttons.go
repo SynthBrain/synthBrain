@@ -5,38 +5,35 @@ import (
 	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/window"
-	"time"
 )
 
-func WebCam(posX, posY float32, onOff *bool) *gui.Button {
+func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
 	button := *gui.NewButton("WebCam")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		// new gorutine for non-block app
 		if *onOff == false {
 			fmt.Println("start WebCam")
-			vision.OnOff = false
-			//go vision.StartWebCam(chImg)
-			go vision.StartWebCam()
+			chFlag <- false
+			go vision.StartWebCam(chFlag)
 			*onOff = true
 		} else {
 			//fmt.Println("stop WebCam")
-			vision.OnOff = true
-			vision.TrFlag = false
-			*onOff = false
+			closeWebCam(onOff, chFlag)
 		}
 	})
 	return &button
 }
 
-func Exit(posX, posY float32, onOff *bool, win window.IWindow) *gui.Button {
+func Exit(posX, posY float32, onOff *bool, win window.IWindow, chFlag chan bool) *gui.Button {
 	button := *gui.NewButton("Exit ")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
-		//fmt.Println("Application Close")
-		closeWebCam(onOff)
-		time.After(time.Second)
-		if vision.OnOff && vision.TrFlag {
+		if *onOff {
+			closeWebCam(onOff, chFlag)
+			fmt.Println("Application Close")
+			//win.SetShouldClose(true)
+		} else {
 			fmt.Println("Application Close")
 			win.SetShouldClose(true)
 		}
@@ -45,10 +42,7 @@ func Exit(posX, posY float32, onOff *bool, win window.IWindow) *gui.Button {
 	return &button
 }
 
-func closeWebCam(onOff *bool) {
-	if *onOff {
-		//fmt.Println("stop WebCam")
-		vision.OnOff = true
-		*onOff = false
-	}
+func closeWebCam(onOff *bool, chFlag chan bool) {
+	chFlag <- true
+	*onOff = false
 }

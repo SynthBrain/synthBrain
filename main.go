@@ -112,11 +112,12 @@ func main() {
 
 	// Create and add button 1 to the root panel
 	onOff := false
-	synB.WebCam = myGui.WebCam(10, 40, &onOff)
+	chOnOffFlag := make(chan bool, 1)
+	synB.WebCam = myGui.WebCam(10, 40, &onOff, chOnOffFlag)
 	synB.Root.Add(synB.WebCam)
 
 	// Create and add exit button to the root panel
-	synB.Exit = myGui.Exit(10, 70, &onOff, synB.Win)
+	synB.Exit = myGui.Exit(10, 70, &onOff, synB.Win, chOnOffFlag)
 	synB.Root.Add(synB.Exit)
 	//****************************************************************
 
@@ -179,7 +180,6 @@ func main() {
 	log.Info("Starting Render Loop")
 	// Start the render loop
 	for !synB.Win.ShouldClose() {
-
 		newNow = time.Now()
 		timeDelta := now.Sub(newNow)
 		now = newNow

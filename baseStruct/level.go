@@ -35,7 +35,7 @@ func NewLevel(synB *SynthBrain, ls *LevelStyle, cam *camera.Perspective) *Level 
 
 	//log.Debug("Starting NewLevel loop")
 
-	l.sizeListNeurons = 10000
+	l.sizeListNeurons = 1000
 	fmt.Println("Start new scene")
 	l.neurons = make([]*Neuron3D, l.sizeListNeurons)
 	//if obj != nil {

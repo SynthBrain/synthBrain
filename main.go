@@ -186,7 +186,7 @@ func main() {
 		now = newNow
 		//fmt.Println(now)
 
-		vision.ReadImg(synB.DataDir)
+		vision.ReadImg(synB.DataDir, "/assets/0.jpg")
 		synB.Update(timeDelta.Seconds())
 		synB.RenderFrame()
 	}

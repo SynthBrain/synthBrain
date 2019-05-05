@@ -62,8 +62,8 @@ func StartWebCam(chFlag chan bool) {
 	}
 }
 
-func ReadImg(dataDir string) {
-	dataDir = dataDir + "/assets/0.jpg"
+func ReadImg(dataDir string, name string) {
+	dataDir = dataDir + name
 
 	reader, err := os.Open(dataDir)
 	m, _, err := image.Decode(reader)

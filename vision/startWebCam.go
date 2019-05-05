@@ -76,16 +76,17 @@ func ReadImg(dataDir string) {
 	fmt.Println()
 }
 
+// Перевернуть img
 func ImgToDataSlice(img image.Image) [][]byte {
 	bounds := img.Bounds()
 
-	data := make([][]byte, bounds.Size().X) // create 1D slice size columns
-	for i := bounds.Min.X; i < bounds.Max.X; i++ {
-		data[i] = make([]byte, bounds.Size().Y) // create 2D slice size rows
-		for j := bounds.Min.Y; j < bounds.Max.Y; j++ {
-			r, g, b, _ := img.At(i, j).RGBA()
+	data := make([][]byte, bounds.Size().Y) // create 1D slice size columns
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		data[y] = make([]byte, bounds.Size().X) // create 2D slice size rows
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, _ := img.At(x, y).RGBA()
 			//data[i][j] = byte((r + g + b) / 3)
-			data[i][j] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
+			data[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 		}
 	}
 	return data
@@ -94,7 +95,7 @@ func ImgToDataSlice(img image.Image) [][]byte {
 func Print2DSlice(data [][]byte) {
 	for i := 0; i < len(data); i++ {
 		for j := 0; j < len(data[i]); j++ {
-			fmt.Print(data[j][i], " ")
+			fmt.Print(data[i][j], " ")
 		}
 		fmt.Println()
 	}

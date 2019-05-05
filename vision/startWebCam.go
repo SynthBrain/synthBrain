@@ -60,25 +60,26 @@ func StartWebCam(chFlag chan bool) {
 	}
 }
 
-func massiveImg(img image.Image) [640][480]byte {
+func massiveImg(img image.Image) [][]byte {
 	bounds := img.Bounds()
 	//fmt.Println(bounds.Max.X, bounds.Max.Y)
-	var data [640][480]byte
+	data := make([][]byte, bounds.Size().Y) // create 1D slice size columns
 	for i := bounds.Min.X; i < bounds.Max.X; i++ {
+		data[i] = make([]byte, bounds.Size().X) // create 2D slice size rows
 		for j := bounds.Min.Y; j < bounds.Max.Y; j++ {
 			r, g, b, _ := img.At(i, j).RGBA()
 			data[i][j] = byte((r + g + b) / 3)
 		}
 	}
-
-	//for i:= 0; i < len(data[i]); i++{
-	//	for j:= 0; j < len(data[j]); j++{
-	//		fmt.Print(data[i][j], " ")
-	//	}
-	//	fmt.Println()
-	//}
 	return data
 }
+
+//for i:= 0; i < len(data[i]); i++{
+//	for j:= 0; j < len(data[j]); j++{
+//		fmt.Print(data[i][j], " ")
+//	}
+//	fmt.Println()
+//}
 
 func myVision(img image.Image) []byte {
 	bounds := img.Bounds()

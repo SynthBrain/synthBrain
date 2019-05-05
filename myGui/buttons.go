@@ -15,7 +15,6 @@ func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
 		// new gorutine for non-block app
 		if *onOff == false {
 			fmt.Println("start WebCam")
-			chFlag <- false
 			go vision.StartWebCam(chFlag)
 			*onOff = true
 		} else {

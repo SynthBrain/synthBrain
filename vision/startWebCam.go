@@ -20,7 +20,6 @@ func StartWebCam(chFlag chan bool) {
 		return
 	}
 	defer webcam.Close()
-	//(sizeX := 3840, sizeY:= 2160)
 
 	// open display window
 	//window := gocv.NewWindow("WebCam")
@@ -47,8 +46,6 @@ func StartWebCam(chFlag chan bool) {
 		}
 		//window.IMShow(img)
 		imgVision, _ = img.ToImage()
-
-		//Print2DSlice(ImgToDataSlice(imgVision))
 
 		fmt.Println(imgVision.Bounds().Size())
 

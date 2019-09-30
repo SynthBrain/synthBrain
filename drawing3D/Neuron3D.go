@@ -46,7 +46,6 @@ func (n *Neuron3D) SetPosition(vec *math32.Vector3){
 		n.Mesh.SetPositionVec(vec)
 	}
 }
-
 //// Neuron3DBody base 3d struct
 //type Neuron3DBody struct{
 //	Geom 	*geometry.Circle

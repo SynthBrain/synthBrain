@@ -1,6 +1,7 @@
 package baseStruct
 
 import (
+	"github.com/SynthBrain/synthBrain/drawing3D"
 	"github.com/g3n/engine/camera"
 	"github.com/g3n/engine/camera/control"
 	"github.com/g3n/engine/core"
@@ -35,7 +36,7 @@ type SynthBrain struct {
 	LoadingLabel *gui.ImageLabel
 
 	LevelScene *core.Node
-	LevelStyle *LevelStyle
+	LevelStyle *drawing3D.LevelStyle
 	Levels     []*Level
 	LevelsRaw  []string
 	Level      *Level

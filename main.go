@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/SynthBrain/synthBrain/baseStruct"
 	"github.com/SynthBrain/synthBrain/myGui"
+	"github.com/SynthBrain/synthBrain/drawing3D"
 	"github.com/g3n/engine/camera"
 	"github.com/g3n/engine/camera/control"
 	"github.com/g3n/engine/core"
@@ -157,7 +158,7 @@ func main() {
 	ambLight := light.NewAmbient(&math32.Color{1.0, 1.0, 1.0}, 0.4)
 	synB.Scene.Add(ambLight)
 
-	synB.LevelStyle = baseStruct.NewBaseStyle(synB.DataDir)
+	synB.LevelStyle = drawing3D.NewBaseStyle(synB.DataDir)
 
 	//synB.SetupGui(width, height)
 	synB.RenderFrame()
@@ -235,11 +236,11 @@ func main() {
 // go func() {
 // 	myDots := 0
 // 	maxD := 700
-// 	dotlist := make(map[int]*neurons.Neuron3DBody)
+// 	dotlist := make(map[int]*drawing3D.Neuron3DBody)
 
 // 	for {
 // 		if myDots < maxD {
-// 			dotlist[myDots] = neurons.NewBody(app, math32.NewColor("White"))
+// 			dotlist[myDots] = drawing3D.NewBody(app, math32.NewColor("White"))
 // 			dotlist[myDots].CreateBody()
 // 			//dotlist[myDots].SetPosition(float32(rand.Int31n(20)), float32(rand.Int31n(20)), float32(rand.Int31n(20)))
 // 			myDots++

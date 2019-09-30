@@ -48,6 +48,7 @@ func StartWebCam(chFlag chan bool) {
 		//window.IMShow(img)
 		imgVision, _ = img.ToImage()
 
+		//ImgToDataSlice(imgVision)
 		//Print2DSlice(ImgToDataSlice(imgVision))
 
 		fmt.Println(imgVision.Bounds().Size())

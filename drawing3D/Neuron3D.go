@@ -1,11 +1,8 @@
-package neurons
+package drawing3D
 
 import (
 	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/util/application"
 	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/geometry"
 )
 
 /*
@@ -13,40 +10,76 @@ import (
 	инициализировать на момент отрисовки, функция затухания, и удалять
 	плавная градация света от белый - красный - жёлтый - зеленый - синий - чёрный
 */
-
-// Neuron3DBody base 3d struct
-type Neuron3DBody struct{
-	Geom 	*geometry.Circle
-	Mat  	*material.Phong
-	Mesh 	*graphic.Points
-	app 	*application.Application
+// Neuron3D
+type Neuron3D struct {
+	BaseObj
+	Points *graphic.Points
+	Mesh   *graphic.Mesh
+	typeBody uint8
 }
 
-// NewBody - constructor
-func NewBody(app *application.Application, color *math32.Color) *Neuron3DBody{
-	return &Neuron3DBody{
-		Geom: 	geometry.NewCircle(0, 3),
-		Mat: 	material.NewPhong(color),
-		app:    app,
-	}
+func NewNeuron3D() *Neuron3D {
+	n := new(Neuron3D)
+	n.Vec = *math32.NewVector3(float32(0), float32(0), float32(0))
+	return n
 }
 
-// CreateBody new body
-func (nBody *Neuron3DBody) CreateBody(){
-	nBody.Mesh = graphic.NewPoints(nBody.Geom, nBody.Mat)
-	nBody.app.Scene().Add(nBody.Mesh)
-	//nBody.IndxBody = nBody.app.Scene().ChildIndex(nBody.Mesh)
+func (n *Neuron3D) SetPoint(point *graphic.Points) { //, light *light.Point) {
+	n.Points = point
+	n.Node3D = &point.Node
+	n.typeBody = 1
+	point.SetPositionVec(&n.Vec)
+}
+
+func (n *Neuron3D) SetMesh(mesh *graphic.Mesh) {
+	n.Mesh = mesh
+	n.Node3D = &mesh.Node
+	n.typeBody = 2
+	mesh.SetPositionVec(&n.Vec)
 }
 
 // SetPosition 3D Body
-func (nBody *Neuron3DBody) SetPosition(x, y, z float32){
-	nBody.Mesh.SetPosition(x, y, z)
+func (n *Neuron3D) SetPosition(vec *math32.Vector3){
+	if n.typeBody == 1{
+		n.Points.SetPositionVec(vec)
+	}else if n.typeBody == 2{
+		n.Mesh.SetPositionVec(vec)
+	}
 }
 
-// GetPosition 3D Body
-func (nBody *Neuron3DBody) GetPosition() math32.Vector3{
-	return nBody.Mesh.Position()
-}
+//// Neuron3DBody base 3d struct
+//type Neuron3DBody struct{
+//	Geom 	*geometry.Circle
+//	Mat  	*material.Phong
+//	Mesh 	*graphic.Points
+//	app 	*application.Application
+//}
+//
+//// NewBody - constructor
+//func NewBody(app *application.Application, color *math32.Color) *Neuron3DBody{
+//	return &Neuron3DBody{
+//		Geom: 	geometry.NewCircle(0, 3),
+//		Mat: 	material.NewPhong(color),
+//		app:    app,
+//	}
+//}
+//
+//// CreateBody new body
+//func (nBody *Neuron3DBody) CreateBody(){
+//	nBody.Mesh = graphic.NewPoints(nBody.Geom, nBody.Mat)
+//	nBody.app.Scene().Add(nBody.Mesh)
+//	//nBody.IndxBody = nBody.app.Scene().ChildIndex(nBody.Mesh)
+//}
+//
+//// SetPosition 3D Body
+//func (nBody *Neuron3DBody) SetPosition(x, y, z float32){
+//	nBody.Mesh.SetPosition(x, y, z)
+//}
+//
+//// GetPosition 3D Body
+//func (nBody *Neuron3DBody) GetPosition() math32.Vector3{
+//	return nBody.Mesh.Position()
+//}
 
 // DrawSynapse - create and draw lines(synapse)
 // func(nBody *Neuron3DBody) DrawSynapse(start math32.Vector3, stop math32.Vector3, color *math32.Color){

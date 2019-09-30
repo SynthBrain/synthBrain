@@ -1,4 +1,4 @@
-package baseStruct
+package drawing3D
 
 import (
 	"github.com/g3n/engine/geometry"
@@ -95,10 +95,8 @@ func (s *LevelStyle) MakeSynapseLine(start math32.Vector3, stop math32.Vector3, 
 	return makeSynapseWithMaterial(s.materialSynapse)
 }
 
-func (s *LevelStyle) synapseGeom(geom *geometry.Geometry,
-	start math32.Vector3,
-	stop math32.Vector3,
-	color *math32.Color) *geometry.Geometry {
+func (s *LevelStyle) synapseGeom(geom *geometry.Geometry, start math32.Vector3,
+									stop math32.Vector3, color *math32.Color) *geometry.Geometry {
 
 	vertices := math32.NewArrayF32(0, 6)
 	vertices.Append(

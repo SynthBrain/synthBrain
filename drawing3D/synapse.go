@@ -1,4 +1,4 @@
-package neurons
+package drawing3D
 
 import (
 	"github.com/g3n/engine/util/application"

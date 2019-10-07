@@ -15,8 +15,8 @@ func (bo *BaseObj) Node() *core.Node {
 	return bo.Node3D
 }
 
-func (bo *BaseObj) GetLocation() math32.Vector3 {
-	return bo.Vec
+func (bo *BaseObj) GetLocation() *math32.Vector3 {
+	return &bo.Vec
 }
 
 func (bo *BaseObj) SetLocation(vec math32.Vector3) {

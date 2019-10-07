@@ -13,10 +13,10 @@ type LevelStyle struct {
 	activeOn  *math32.Color
 	activeOff *math32.Color
 
-	materialWhite    *material.Phong
-	materialBlack    *material.Phong
-	materialDotRed   *material.Phong
-	materialDotWhite *material.Phong
+	materialWhite    *material.Standard
+	materialBlack    *material.Standard
+	materialDotRed   *material.Standard
+	materialDotWhite *material.Standard
 
 	materialSynapse *material.Basic
 
@@ -29,7 +29,7 @@ type LevelStyle struct {
 }
 
 // NewBaseStyle
-func NewBaseStyle(dataDir string) *LevelStyle {
+func NewBaseStyle() *LevelStyle {
 
 	s := new(LevelStyle)
 
@@ -46,21 +46,22 @@ func NewBaseStyle(dataDir string) *LevelStyle {
 	//}
 
 	// Load textures and create materials
-	s.materialWhite = material.NewPhong(math32.NewColor("white"))
+	//s.materialWhite = material.NewPhong(math32.NewColor("white"))
+	s.materialWhite = material.NewStandard(math32.NewColor("white"))
 	//s.materialWhite.AddTexture(newTexture(dataDir + "/assets/white.png"))
 
-	s.materialBlack = material.NewPhong(math32.NewColor("black"))
+	s.materialBlack = material.NewStandard(math32.NewColor("black"))
 	//s.materialBlack.AddTexture(newTexture(dataDir + "/assets/black.png"))
 
 	//**********************************************************************************
 	s.materialSynapse = material.NewBasic()
-	s.materialDotRed = material.NewPhong(math32.NewColor("Red"))
-	s.materialDotWhite = material.NewPhong(math32.NewColor("White"))
+	s.materialDotRed = material.NewStandard(math32.NewColor("Red"))
+	s.materialDotWhite = material.NewStandard(math32.NewColor("White"))
 
 	// Create functions that return a cube mesh using the provided material, reusing the same cube geometry
 	//*****************************Cube*******************************
 	sharedCubeGeom := geometry.NewCube(0.5)
-	makeObjWithMaterial := func(mat *material.Phong) func() *graphic.Mesh {
+	makeObjWithMaterial := func(mat *material.Standard) func() *graphic.Mesh {
 		return func() *graphic.Mesh { return graphic.NewMesh(sharedCubeGeom, mat) }
 	}
 
@@ -69,7 +70,7 @@ func NewBaseStyle(dataDir string) *LevelStyle {
 
 	//*****************************Dots*******************************
 	sharedDotGeom := s.neuronGeom()
-	makeDotWithMaterial := func(mat *material.Phong) func() *graphic.Points {
+	makeDotWithMaterial := func(mat *material.Standard) func() *graphic.Points {
 		return func() *graphic.Points { return graphic.NewPoints(sharedDotGeom, mat) }
 	}
 	s.MakeWhiteDot = makeDotWithMaterial(s.materialDotWhite)
@@ -85,7 +86,7 @@ func NewBaseStyle(dataDir string) *LevelStyle {
 	return s
 }
 
-func (s *LevelStyle) MakeSynapseLine(start math32.Vector3, stop math32.Vector3, color *math32.Color) func() *graphic.Lines {
+func (s *LevelStyle) MakeSynapseLine(start *math32.Vector3, stop *math32.Vector3, color *math32.Color) (func() *graphic.Lines) {
 
 	makeSynapseWithMaterial := func(mat *material.Basic) func() *graphic.Lines {
 		return func() *graphic.Lines {
@@ -95,8 +96,8 @@ func (s *LevelStyle) MakeSynapseLine(start math32.Vector3, stop math32.Vector3, 
 	return makeSynapseWithMaterial(s.materialSynapse)
 }
 
-func (s *LevelStyle) synapseGeom(geom *geometry.Geometry, start math32.Vector3,
-									stop math32.Vector3, color *math32.Color) *geometry.Geometry {
+func (s *LevelStyle) synapseGeom(geom *geometry.Geometry, start *math32.Vector3,
+									stop *math32.Vector3, color *math32.Color) *geometry.Geometry {
 
 	vertices := math32.NewArrayF32(0, 6)
 	vertices.Append(

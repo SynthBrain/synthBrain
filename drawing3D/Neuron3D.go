@@ -15,12 +15,13 @@ type Neuron3D struct {
 	BaseObj
 	Points *graphic.Points
 	Mesh   *graphic.Mesh
+	Lines   *graphic.Lines
 	typeBody uint8
+	IndexScene int
 }
 
 func NewNeuron3D() *Neuron3D {
 	n := new(Neuron3D)
-	n.Vec = *math32.NewVector3(float32(0), float32(0), float32(0))
 	return n
 }
 
@@ -28,22 +29,34 @@ func (n *Neuron3D) SetPoint(point *graphic.Points) { //, light *light.Point) {
 	n.Points = point
 	n.Node3D = &point.Node
 	n.typeBody = 1
-	point.SetPositionVec(&n.Vec)
+	n.Points.SetPositionVec(&n.Vec)
 }
 
 func (n *Neuron3D) SetMesh(mesh *graphic.Mesh) {
 	n.Mesh = mesh
 	n.Node3D = &mesh.Node
 	n.typeBody = 2
-	mesh.SetPositionVec(&n.Vec)
+	n.Mesh.SetPositionVec(&n.Vec)
+}
+
+func (n *Neuron3D) SetLines(lines *graphic.Lines) {
+	n.Lines = lines
+	n.Node3D = &lines.Node
+	n.typeBody = 3
+	n.Lines.SetPositionVec(&n.Vec)
 }
 
 // SetPosition 3D Body
 func (n *Neuron3D) SetPosition(vec *math32.Vector3){
 	if n.typeBody == 1{
+		n.SetLocation(*vec)
 		n.Points.SetPositionVec(vec)
 	}else if n.typeBody == 2{
+		n.SetLocation(*vec)
 		n.Mesh.SetPositionVec(vec)
+	}else if n.typeBody == 3{
+		n.SetLocation(*vec)
+		n.Lines.SetPositionVec(vec)
 	}
 }
 //// Neuron3DBody base 3d struct

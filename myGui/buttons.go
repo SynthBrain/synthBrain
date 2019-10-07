@@ -3,8 +3,8 @@ package myGui
 import (
 	"fmt"
 	"github.com/SynthBrain/synthBrain/vision"
+	"github.com/g3n/engine/app"
 	"github.com/g3n/engine/gui"
-	"github.com/g3n/engine/window"
 	"time"
 )
 
@@ -25,22 +25,24 @@ func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
 	return &button
 }
 
-func Exit(posX, posY float32, onOff *bool, win window.IWindow, chFlag chan bool) *gui.Button {
-	button := *gui.NewButton("Exit ")
+func Exit(posX, posY float32, onOff *bool, app *app.Application, chFlag chan bool) *gui.Button {
+	button := gui.NewButton("Exit ")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		if *onOff {
 			closeWebCam(onOff, chFlag)
 			fmt.Println("Application Close")
 			time.Sleep(time.Second)
-			win.SetShouldClose(true)
+			//win.SetShouldClose(true)
+			app.Exit()
 		} else {
 			fmt.Println("Application Close")
-			win.SetShouldClose(true)
+			//win.SetShouldClose(true)
+			app.Exit()
 		}
 	})
 
-	return &button
+	return button
 }
 
 func closeWebCam(onOff *bool, chFlag chan bool) {

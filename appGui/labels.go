@@ -1,4 +1,4 @@
-package myGui
+package appGui
 
 import (
 	"github.com/g3n/engine/gui"

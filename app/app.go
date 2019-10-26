@@ -453,12 +453,14 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 		}
 	})
 	//a.mainPanel.Add(a.treeTests)
-	s1 := gui.NewHSplitter(175, a.mainPanel.Height())
-	s1.SetPosition(0, 28)
-	s1.P1.SetColor4(&math32.Color4{0, 0, 0, 0})
-	s1.SetSplit(0.75)
-	s1.P0.Add(a.treeTests)
-	a.mainPanel.Add(s1)
+	// s1 := gui.NewHSplitter(175, a.mainPanel.Height())
+	// s1.SetPosition(0, 28)
+	// s1.P1.SetColor4(&math32.Color4{0, 0, 0, 0})
+	// s1.SetSplit(1)
+
+	// s1.P0.Add(a.treeTests)
+	//a.mainPanel.Add(s1)
+	a.mainPanel.Add(a.treeTests)
 }
 
 // setupScene resets the current scene for executing a new (or first) test
@@ -536,6 +538,12 @@ func (a *App) setupScene() {
 func (a *App) DemoPanel() *gui.Panel {
 
 	return a.demoPanel
+}
+
+// MemoPanel returns the current gui panel for demos to add elements to.
+func (a *App) MainPanel() *gui.Panel {
+
+	return a.mainPanel
 }
 
 // DirData returns the base directory for data

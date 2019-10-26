@@ -1,4 +1,4 @@
-package myGui
+package appGui
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
-	button := *gui.NewButton("WebCam")
+	button := gui.NewButton("WebCam")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		// new gorutine for non-block app
@@ -22,7 +22,7 @@ func WebCam(posX, posY float32, onOff *bool, chFlag chan bool) *gui.Button {
 			closeWebCam(onOff, chFlag)
 		}
 	})
-	return &button
+	return button
 }
 
 func Exit(posX, posY float32, onOff *bool, app *app.Application, chFlag chan bool) *gui.Button {

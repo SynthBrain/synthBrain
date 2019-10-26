@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/SynthBrain/synthBrain/appGui"
+	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/gls"
 	"github.com/g3n/engine/graphic"
@@ -84,6 +85,9 @@ func (level *Level) Start(app *App) {
 
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
+	//vision.ReadImg(app.dirData, "/0.jpg")
+
+
 	//app.Scene().RemoveAt(0)
 	//level.Start(app)
 }

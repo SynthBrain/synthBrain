@@ -488,7 +488,8 @@ func (a *App) setupScene() {
 	a.SetCursor(window.ArrowCursor)
 
 	// Set default background color
-	a.Gls().ClearColor(0.6, 0.6, 0.6, 1.0)
+	//a.Gls().ClearColor(0.6, 0.6, 0.6, 1.0)
+	a.Gls().ClearColor(0, 0.5, 0.7, 1.0)
 
 	// Reset renderer z-sorting flag
 	a.Renderer().SetObjectSorting(true)

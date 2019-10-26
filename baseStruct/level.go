@@ -22,6 +22,8 @@ type Level struct {
 	//makeSynapse func(start *math32.Vector3, stop *math32.Vector3) *drawing3D.Neuron3D
 	//remSynapse func(i int)
 }
+
+
 //
 //// NewLevel - new Level object
 //func NewLevel(synB *SynthBrain, ls *drawing3D.LevelStyle, cam *camera.Camera) *Level {

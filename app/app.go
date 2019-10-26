@@ -3,8 +3,6 @@ package app
 import (
 	"flag"
 	"fmt"
-	"github.com/SynthBrain/synthBrain/demos/geometry"
-	"github.com/SynthBrain/synthBrain/demos/other"
 	"github.com/g3n/engine/audio/al"
 	"github.com/g3n/engine/util"
 	"github.com/kardianos/osext"
@@ -28,6 +26,16 @@ import (
 	"github.com/g3n/engine/util/stats"
 	"github.com/g3n/engine/window"
 )
+
+func init() {
+	//DemoMap["BaseLevel"] = &Level{}
+	// DemoMap["physics-experimental.basic"] = &PhysicsBasic{}
+	// DemoMap["animation.basic"] = &AnimationBasic{}
+	
+	// DemoMap["geometry.points"] = &Points{}
+	// DemoMap["geometry.plane"] = &Plane{}
+	// DemoMap["geometry.lines"] = &Lines{}
+}
 
 // App contains the application state
 type App struct {
@@ -104,13 +112,6 @@ func Create() *App {
 	a := new(App)
 	a.Application = app.App()
 
-	//*****************************
-	plane := new(geometry.Plane)
-	plane.Init()
-	ray := new(other.Raycast)
-	ray.Init()
-	//******************************
-
 	// Creates application logger
 	a.log = logger.New("G3ND", nil)
 	a.log.AddWriter(logger.NewConsole(false))
@@ -147,8 +148,8 @@ func Create() *App {
 	// Create frame rater
 	a.frameRater = util.NewFrameRater(*oTargetFPS)
 
-	flag.Usage = usage // Sets the application usage
-	flag.Parse()       // Parse command line flags
+	// flag.Usage = usage // Sets the application usage
+	// flag.Parse()       // Parse command line flags
 
 	// Apply log levels to engine package loggers
 	if *oLogs != "" {
@@ -210,23 +211,36 @@ func Create() *App {
 	// Setup scene
 	a.setupScene()
 
-	// If name of test supplied in the command line
-	// set it as the current test and initialize it.
-	if len(flag.Args()) > 0 {
-		tname := flag.Args()[0]
-		a.log.Info("ARGS")
-		test, ok := DemoMap[tname]
-		if ok {
-			a.log.Info("Start")
-			a.currentDemo = test
-			a.currentDemo.Start(a)
-		}
-		if a.currentDemo == nil {
-			a.log.Error("Invalid demo name")
-			usage()
-			return nil
-		}
-	}
+	// test, ok := DemoMap["geometry.lines"]
+	// //flag.Args()[0] = "geometry.lines"
+	// if ok {
+	// 	a.log.Info("Start")
+	// 	a.currentDemo = test
+	// 	a.currentDemo.Start(a)
+	// }
+	// if a.currentDemo == nil {
+	// 	a.log.Error("Invalid demo name")
+	// 	usage()
+	// 	return nil
+	// }
+
+	//If name of test supplied in the command line
+	//set it as the current test and initialize it.
+	// if len(flag.Args()) > 0 {
+	// 	tname := flag.Args()[0]
+	// 	a.log.Info("ARGS")
+	// 	test, ok := DemoMap[tname]
+	// 	if ok {
+	// 		a.log.Info("Start")
+	// 		a.currentDemo = test
+	// 		a.currentDemo.Start(a)
+	// 	}
+	// 	if a.currentDemo == nil {
+	// 		a.log.Error("Invalid demo name")
+	// 		usage()
+	// 		return nil
+	// 	}
+	// }
 	return a
 }
 

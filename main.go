@@ -2,23 +2,22 @@ package main
 
 import (
 	"github.com/SynthBrain/synthBrain/app"
-	//_ "github.com/SynthBrain/synthBrain/demos/animation"
-	//_ "github.com/SynthBrain/synthBrain/demos/audio"
-	//_ "github.com/SynthBrain/synthBrain/demos//experimental/physics"
-	//_ "github.com/SynthBrain/synthBrain/demos//geometry"
-	//_ "github.com/SynthBrain/synthBrain/demos//gui"
-	//_ "github.com/SynthBrain/synthBrain/demos//helper"
-	//_ "github.com/SynthBrain/synthBrain/demos//light"
-	//_ "github.com/SynthBrain/synthBrain/demos//loader"
-	//_ "github.com/SynthBrain/synthBrain/demos//material"
-	//_ "github.com/SynthBrain/synthBrain/demos//other"
-	//_ "github.com/SynthBrain/synthBrain/demos//shader"
-	//_ "github.com/SynthBrain/synthBrain/demos//tests"
-	//_ "github.com/SynthBrain/synthBrain/demos//texture"
+	// _ "github.com/SynthBrain/synthBrain/demos/animation"
+	// _ "github.com/SynthBrain/synthBrain/demos/audio"
+	// _ "github.com/SynthBrain/synthBrain/demos//experimental/physics"
+	// _ "github.com/SynthBrain/synthBrain/demos//geometry"
+	// _ "github.com/SynthBrain/synthBrain/demos//gui"
+	// _ "github.com/SynthBrain/synthBrain/demos//helper"
+	// _ "github.com/SynthBrain/synthBrain/demos//light"
+	// _ "github.com/SynthBrain/synthBrain/demos//loader"
+	// _ "github.com/SynthBrain/synthBrain/demos//material"
+	// _ "github.com/SynthBrain/synthBrain/demos//other"
+	// _ "github.com/SynthBrain/synthBrain/demos//shader"
+	// _ "github.com/SynthBrain/synthBrain/demos//tests"
+	// _ "github.com/SynthBrain/synthBrain/demos//texture"
 )
 
 func main() {
-
 	// Create and run application
 	app.Create().Run()
 }

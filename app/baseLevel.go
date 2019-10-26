@@ -80,13 +80,12 @@ func (level *Level) Start(app *App) {
 	mesh := graphic.NewPoints(geom, mat)
 	mesh.SetScale(1, 1, 1)
 	//a.Scene().Add(t.mesh)
-	app.Scene().AddAt(0, mesh)
+	app.Scene().AddAt(1, mesh)
 }
 
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
-	//vision.ReadImg(app.dirData, "/0.jpg")
-
+	vision.ReadImg(app.dirData, "/0.jpg")
 
 	//app.Scene().RemoveAt(0)
 	//level.Start(app)
@@ -94,3 +93,39 @@ func (level *Level) Update(app *App, deltaTime time.Duration) {
 
 // Cleanup is called once at the end of the demo.
 func (level *Level) Cleanup(app *App) {}
+
+func (level *Level) make3DLayer(index int, size int, coords []math32.Vector3, app *App) {
+	// Creates geometry
+	geom := geometry.NewGeometry()
+	positions := math32.NewArrayF32(0, 0)
+	colors := math32.NewArrayF32(0, 16)
+
+	numPoints := size
+	//coord := float32(10)
+	for i := 0; i < numPoints; i++ {
+		var vertex math32.Vector3
+		vertex.Set(
+			coords[i].X,
+			coords[i].Y,
+			coords[i].Z,
+		)
+		positions.AppendVector3(&vertex)
+		colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
+	}
+
+	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
+	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+	positions = nil // Positions cannot be used after transfering to VBO
+	colors = nil
+
+	// Creates point material
+	//mat := material.NewPoint(&math32.Color{0, 0, 0})
+	mat := material.NewBasic()
+	//mat.SetSize(50)
+
+	// Creates points mesh
+	mesh := graphic.NewPoints(geom, mat)
+	//mesh.SetScale(1, 1, 1)
+	//app.Scene().Add(mesh)
+	app.Scene().AddAt(index, mesh)
+}

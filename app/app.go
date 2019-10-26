@@ -27,16 +27,6 @@ import (
 	"github.com/g3n/engine/window"
 )
 
-func init() {
-	//DemoMap["BaseLevel"] = &Level{}
-	// DemoMap["physics-experimental.basic"] = &PhysicsBasic{}
-	// DemoMap["animation.basic"] = &AnimationBasic{}
-	
-	// DemoMap["geometry.points"] = &Points{}
-	// DemoMap["geometry.plane"] = &Plane{}
-	// DemoMap["geometry.lines"] = &Lines{}
-}
-
 // App contains the application state
 type App struct {
 	*app.Application                  // Embedded standard application object
@@ -337,7 +327,7 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 	// stays over the gui panel when opened.
 	headerColor := math32.Color4{13.0 / 256.0, 41.0 / 256.0, 62.0 / 256.0, 1}
 	lightTextColor := math32.Color4{0.8, 0.8, 0.8, 1}
-	header := gui.NewPanel(600, 40)
+	header := gui.NewPanel(600, 20)
 	header.SetBorders(0, 0, 1, 0)
 	header.SetPaddings(4, 4, 4, 4)
 	header.SetColor4(&headerColor)
@@ -415,8 +405,10 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 	a.control.SetStyles(&styles)
 	header.Add(a.control)
 
+	
+
 	// Test list
-	a.treeTests = gui.NewTree(175, 0)
+	a.treeTests = gui.NewTree(175, 500)//(175, 0)
 
 	// TODO This does not persist - have to change style / but better yet is to improve GUI so that individual style changes can be performed this way
 	//a.treeTests.SetBorders(0, 1, 1, 1)
@@ -462,7 +454,13 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 			a.currentDemo = test
 		}
 	})
-	a.mainPanel.Add(a.treeTests)
+	//a.mainPanel.Add(a.treeTests)
+	s1 := gui.NewHSplitter(175, 500)
+	s1.SetPosition(0, 28)
+	s1.P1.SetColor4(&math32.Color4{0, 0, 0, 0})
+	s1.SetSplit(0.75)
+	s1.P0.Add(a.treeTests)
+	a.mainPanel.Add(s1)
 }
 
 // setupScene resets the current scene for executing a new (or first) test

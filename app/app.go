@@ -405,10 +405,8 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 	a.control.SetStyles(&styles)
 	header.Add(a.control)
 
-	
-
 	// Test list
-	a.treeTests = gui.NewTree(175, 500)//(175, 0)
+	a.treeTests = gui.NewTree(175, a.mainPanel.Height())//(175, 0)
 
 	// TODO This does not persist - have to change style / but better yet is to improve GUI so that individual style changes can be performed this way
 	//a.treeTests.SetBorders(0, 1, 1, 1)
@@ -455,7 +453,7 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 		}
 	})
 	//a.mainPanel.Add(a.treeTests)
-	s1 := gui.NewHSplitter(175, 500)
+	s1 := gui.NewHSplitter(175, a.mainPanel.Height())
 	s1.SetPosition(0, 28)
 	s1.P1.SetColor4(&math32.Color4{0, 0, 0, 0})
 	s1.SetSplit(0.75)

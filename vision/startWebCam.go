@@ -9,7 +9,7 @@ import (
 )
 
 // StartWebCam
-func StartWebCam(chFlag chan bool) {
+func StartWebCam(chFlag chan bool, visionChan chan [][]byte) {
 	// set to use a video capture device 0
 	deviceID := 0
 	// open webcam
@@ -48,13 +48,13 @@ func StartWebCam(chFlag chan bool) {
 		//window.IMShow(img)
 		imgVision, _ = img.ToImage()
 
-		//ImgToDataSlice(imgVision)
+		visionChan <- ImgToDataSlice(imgVision)
+		
 		//Print2DSlice(ImgToDataSlice(imgVision))
-
-		fmt.Println(imgVision.Bounds().Size())
+		//fmt.Println(imgVision.Bounds().Size())
 
 		//write jpg file
-		//gocv.IMWrite("C:\Users\synth\go\src\github\SynthBrain\synthBrain\assets\webCam.jpg", img)
+		//gocv.IMWrite("C:/Users/synth/go/src/github.com/SynthBrain/synthBrain/assets/webCam.jpg", img)
 
 		//window.WaitKey(1)
 		if len(chFlag) > 0 {

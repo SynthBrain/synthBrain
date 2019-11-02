@@ -2,12 +2,12 @@ package app
 
 import (
 	_ "fmt"
-	_ "math/rand"
+	_"math/rand"
 	"time"
 
 	"github.com/SynthBrain/synthBrain/appGui"
 	"github.com/SynthBrain/synthBrain/baseLogic"
-	_ "github.com/SynthBrain/synthBrain/vision"
+	_"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/geometry"
 	"github.com/g3n/engine/gls"
 	"github.com/g3n/engine/graphic"
@@ -38,7 +38,7 @@ type Level struct {
 func (level *Level) Start(app *App) {
 	// Init Base Logic
 	level.logic = new(baseLogic.Logic)
-	level.logic.VisionChan = make(chan [][]byte)
+	level.logic.VisionChan = make(chan *[][]byte, 1)
 
 	// Create and add a button to the scene
 	//VisionChan:= make(chan [][]byte)
@@ -54,12 +54,12 @@ func (level *Level) Start(app *App) {
 	axes := helper.NewAxes(2)
 	app.Scene().Add(axes)
 
-	// Creates geometry
+	// //Creates geometry
 	// geom := geometry.NewGeometry()
 	// positions := math32.NewArrayF32(0, 0)
 	// colors := math32.NewArrayF32(0, 16)
 
-	// numPoints := 100000
+	// numPoints := 300000
 	// coord := float32(10)
 	// for i := 0; i < numPoints; i++ {
 	// 	var vertex math32.Vector3
@@ -72,11 +72,11 @@ func (level *Level) Start(app *App) {
 	// 	colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
 	// }
 
-	// for i := 0; i < 100000; i++{
-	// 	positions.Append(float32(rand.Int31n(50)), float32(rand.Int31n(50)), float32(rand.Int31n(50)))
-	// 	colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
-	// 	//colors.Append(1, 0, 0)
-	// }
+	//// for i := 0; i < 100000; i++{
+	//// 	positions.Append(float32(rand.Int31n(50)), float32(rand.Int31n(50)), float32(rand.Int31n(50)))
+	//// 	colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
+	//// 	//colors.Append(1, 0, 0)
+	//// }
 
 	// geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
 	// geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
@@ -98,36 +98,59 @@ func (level *Level) Start(app *App) {
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
 	// vision.ReadImg(app.dirData, "/0.jpg")
-
-	if level.onOff {
+	select {
+	case dataKey := <-level.logic.VisionChan:
+		data := *dataKey
 		count := 0
-		data := <-level.logic.VisionChan
-		//coords := make([]math32.Vector3, len(data) * len(data[0]))
+		//vision.ImgToDataSlice(data)
 		coords := make(map[math32.Vector3]byte, len(data)*len(data[0]))
 		tempPosition := *math32.NewVector3(0, 0, 0)
-		if len(data) > 0 {
-			for i := 0; i < len(data); i++ {
-				for j := 0; j < len(data[i]); j++ {
-					//fmt.Println("Start 2 ", j)
-					//fmt.Print(data[i][j], " ")
-					tempPosition.Set(float32(i), float32(j), 0)
-					coords[tempPosition] = data[i][j]
-					//coords[count].Set(float32(i), float32(j), 0) //data[i][j]
-					count++
-				}
+		for i := 0; i < len(data); i++ {
+			for j := 0; j < len(data[i]); j++ {
+				//fmt.Println("Start 2 ", j)
+				//fmt.Print(data[i][j], " ")
+				tempPosition.Set(float32(i), float32(j), 0)
+				coords[tempPosition] = data[i][j]
+				//coords[count].Set(float32(i), float32(j), 0) //data[i][j]
+				count++
 			}
-			//fmt.Println(count)
 		}
-		level.make3DLayer(0, count, coords, app)
-		//vision.Print2DSlice(data)
+		//fmt.Println(count)
+		app.Scene().RemoveAll(true) // NOTBAD
+		level.make3DLayer(0, count, coords, app)		
+	default:
+		// залишаєм щоб не стопати фрейм рейт на камері ставим таймер очікування
 	}
+
+	// if level.onOff {
+	// 	count := 0
+	// 	data := <-level.logic.VisionChan
+	// 	//coords := make([]math32.Vector3, len(data) * len(data[0]))
+	// 	coords := make(map[math32.Vector3]byte, len(data)*len(data[0]))
+	// 	tempPosition := *math32.NewVector3(0, 0, 0)
+	// 	if len(data) > 0 {
+	// 		for i := 0; i < len(data); i++ {
+	// 			for j := 0; j < len(data[i]); j++ {
+	// 				//fmt.Println("Start 2 ", j)
+	// 				//fmt.Print(data[i][j], " ")
+	// 				tempPosition.Set(float32(i), float32(j), 0)
+	// 				coords[tempPosition] = data[i][j]
+	// 				//coords[count].Set(float32(i), float32(j), 0) //data[i][j]
+	// 				count++
+	// 			}
+	// 		}
+	// 		//fmt.Println(count)
+	// 	}
+	// 	level.make3DLayer(0, count, coords, app)
+	// 	//vision.Print2DSlice(data)
+	// }
 
 	// update baseLogic.upd()
 	// get data from baseLogic
 	// use data for update 3D objects on scene
 
-	//app.Scene().RemoveAt(0)
-	//level.Start(app)
+	// app.Scene().RemoveAt(0)
+	// level.Start(app)
 }
 
 // Cleanup is called once at the end of the demo.
@@ -163,7 +186,7 @@ func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]b
 				float32(i),
 				0,
 			)
-			temp = temp / 255
+			temp = temp / 100
 			positions.AppendVector3(&vertex)
 			colors.Append(float32(temp), float32(temp), float32(temp))
 		}

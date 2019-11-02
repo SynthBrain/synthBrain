@@ -1,15 +1,17 @@
 package baseLogic
 
+import (
+	
+)
 type Logic struct{
-	VisionChan chan [][]byte // include from baselevel to button-WebCam
-
+	VisionChan chan *[][]byte // include from baselevel to button-WebCam
 }
 
-func InitLogic() *Logic{
-	return &Logic{
-		VisionChan: make(chan [][]byte),
-	}
-}
+// func InitLogic() *Logic{
+// 	return &Logic{
+// 		VisionChan: make(chan *[][]byte),
+// 	}
+// }
 
 func(l *Logic) Update(){
 

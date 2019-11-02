@@ -2,14 +2,26 @@ package vision
 
 import (
 	"fmt"
-	"gocv.io/x/gocv"
 	"image"
 	"log"
 	"os"
+	"time"
+
+	"gocv.io/x/gocv"
 )
 
+// type Data struct{
+// 	Image image.Image
+// 	Slice [][]byte
+// }
+
+var dataImage image.Image
+var dataSlice [][]byte
+
 // StartWebCam
-func StartWebCam(chFlag chan bool, visionChan chan [][]byte) {
+func StartWebCam(chFlag chan bool, visionChan chan *[][]byte) {
+	//data := new(Data)
+
 	// set to use a video capture device 0
 	deviceID := 0
 	// open webcam
@@ -30,7 +42,8 @@ func StartWebCam(chFlag chan bool, visionChan chan [][]byte) {
 	img := gocv.NewMat()
 	defer img.Close()
 
-	imgVision, err := img.ToImage()
+	//imgVision, err := img.ToImage()
+	dataImage, err = img.ToImage()
 	if err != nil {
 		fmt.Println("ImgMat not convert")
 	}
@@ -46,10 +59,13 @@ func StartWebCam(chFlag chan bool, visionChan chan [][]byte) {
 			continue
 		}
 		//window.IMShow(img)
-		imgVision, _ = img.ToImage()
+		dataImage, _ = img.ToImage()
+		select {
+		case visionChan <- ImgToDataSlice(&dataImage):
+		default:
+			time.Sleep(50 * time.Millisecond)
+		}
 
-		visionChan <- ImgToDataSlice(imgVision)
-		
 		//Print2DSlice(ImgToDataSlice(imgVision))
 		//fmt.Println(imgVision.Bounds().Size())
 
@@ -75,24 +91,25 @@ func ReadImg(dataDir string, name string) {
 		log.Fatal(err)
 	}
 	defer reader.Close()
-
-	Print2DSlice(ImgToDataSlice(m))
+	Print2DSlice(*ImgToDataSlice(&m))
 	fmt.Println()
 }
 
-// Перевернуть img
-func ImgToDataSlice(img image.Image) [][]byte {
-	bounds := img.Bounds()
+// ImgToDataSlice convert image to slice
+func ImgToDataSlice(img *image.Image) *[][]byte {
+	//data := dataSlice
+	imgTemp := *img
+	bounds := imgTemp.Bounds()
 
-	data := make([][]byte, bounds.Size().Y) // create 1D slice size columns
+	dataSlice = make([][]byte, bounds.Size().Y) // create 1D slice size columns
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		data[y] = make([]byte, bounds.Size().X) // create 2D slice size rows
+		dataSlice[y] = make([]byte, bounds.Size().X) // create 2D slice size rows
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			r, g, b, _ := img.At(x, y).RGBA()
-			data[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
+			r, g, b, _ := imgTemp.At(x, y).RGBA()
+			dataSlice[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 		}
 	}
-	return data
+	return &dataSlice
 }
 
 func Print2DSlice(data [][]byte) {

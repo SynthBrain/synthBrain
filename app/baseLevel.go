@@ -37,11 +37,9 @@ type Level struct {
 // Start is called once at the start of the demo.
 func (level *Level) Start(app *App) {
 	// Init Base Logic
-	level.logic = new(baseLogic.Logic)
-	level.logic.VisionChan = make(chan *[][]byte, 1)
+	level.logic = baseLogic.InitLogic()
 
 	// Create and add a button to the scene
-	//VisionChan:= make(chan [][]byte)
 	level.onOff = false
 	chOnOffFlag := make(chan bool, 1)
 	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan)
@@ -98,65 +96,21 @@ func (level *Level) Start(app *App) {
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
 	// vision.ReadImg(app.dirData, "/0.jpg")
-	select {
-	case dataKey := <-level.logic.VisionChan:
-		data := *dataKey
-		count := 0
-		//vision.ImgToDataSlice(data)
-		coords := make(map[math32.Vector3]byte, len(data)*len(data[0]))
-		tempPosition := *math32.NewVector3(0, 0, 0)
-		for i := 0; i < len(data); i++ {
-			for j := 0; j < len(data[i]); j++ {
-				//fmt.Println("Start 2 ", j)
-				//fmt.Print(data[i][j], " ")
-				tempPosition.Set(float32(i), float32(j), 0)
-				coords[tempPosition] = data[i][j]
-				//coords[count].Set(float32(i), float32(j), 0) //data[i][j]
-				count++
-			}
-		}
-		//fmt.Println(count)
-		app.Scene().RemoveAll(true) // NOTBAD
-		level.make3DLayer(0, count, coords, app)		
-	default:
-		// залишаєм щоб не стопати фрейм рейт на камері ставим таймер очікування
-	}
-
-	// if level.onOff {
-	// 	count := 0
-	// 	data := <-level.logic.VisionChan
-	// 	//coords := make([]math32.Vector3, len(data) * len(data[0]))
-	// 	coords := make(map[math32.Vector3]byte, len(data)*len(data[0]))
-	// 	tempPosition := *math32.NewVector3(0, 0, 0)
-	// 	if len(data) > 0 {
-	// 		for i := 0; i < len(data); i++ {
-	// 			for j := 0; j < len(data[i]); j++ {
-	// 				//fmt.Println("Start 2 ", j)
-	// 				//fmt.Print(data[i][j], " ")
-	// 				tempPosition.Set(float32(i), float32(j), 0)
-	// 				coords[tempPosition] = data[i][j]
-	// 				//coords[count].Set(float32(i), float32(j), 0) //data[i][j]
-	// 				count++
-	// 			}
-	// 		}
-	// 		//fmt.Println(count)
-	// 	}
-	// 	level.make3DLayer(0, count, coords, app)
-	// 	//vision.Print2DSlice(data)
-	// }
 
 	// update baseLogic.upd()
-	// get data from baseLogic
-	// use data for update 3D objects on scene
-
-	// app.Scene().RemoveAt(0)
-	// level.Start(app)
+	level.logic.Update()
+	app.Scene().RemoveAll(true)
+	//****************************DEMO*************************************
+	// get data from baseLogic and use data for update 3D objects on scene
+	level.make3DLayer(0, 0, *level.logic.GetData(), app)
 }
 
 // Cleanup is called once at the end of the demo.
-func (level *Level) Cleanup(app *App) {}
+func (level *Level) Cleanup(app *App) {
+	app.Scene().RemoveAll(true)
+}
 
-func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]byte, app *App) {
+func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]float32, app *App) {
 	// Creates geometry
 	geom := geometry.NewGeometry()
 	positions := math32.NewArrayF32(0, 0)
@@ -177,16 +131,17 @@ func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]b
 	// 	colors.Append(coords, coords, coords)
 	// }
 
+	// ПЛОХОЙ ВАРИАНТ РИСОВАНИЯ СЦЕНЫ
 	for i := 0; i < 480; i++ {
 		for j := 0; j < 640; j++ {
 			temp := coords[*math32.NewVector3(float32(i), float32(j), 0)]
 			var vertex math32.Vector3
 			vertex.Set(
 				float32(j),
-				float32(i),
 				0,
+				float32(i),
 			)
-			temp = temp / 100
+			//temp = temp / 100
 			positions.AppendVector3(&vertex)
 			colors.Append(float32(temp), float32(temp), float32(temp))
 		}

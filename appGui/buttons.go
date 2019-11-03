@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]byte) *gui.Button {
+func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]float32) *gui.Button {
 	button := gui.NewButton("WebCam")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {

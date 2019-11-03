@@ -16,10 +16,10 @@ import (
 // }
 
 var dataImage image.Image
-var dataSlice [][]byte
+var dataSlice [][]float32
 
 // StartWebCam
-func StartWebCam(chFlag chan bool, visionChan chan *[][]byte) {
+func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
 	//data := new(Data)
 
 	// set to use a video capture device 0
@@ -66,7 +66,7 @@ func StartWebCam(chFlag chan bool, visionChan chan *[][]byte) {
 			time.Sleep(50 * time.Millisecond)
 		}
 
-		//Print2DSlice(ImgToDataSlice(imgVision))
+		//Print2DSlice(*ImgToDataSlice(&dataImage))
 		//fmt.Println(imgVision.Bounds().Size())
 
 		//write jpg file
@@ -96,25 +96,30 @@ func ReadImg(dataDir string, name string) {
 }
 
 // ImgToDataSlice convert image to slice
-func ImgToDataSlice(img *image.Image) *[][]byte {
+func ImgToDataSlice(img *image.Image) *[][]float32 {
 	//data := dataSlice
 	imgTemp := *img
 	bounds := imgTemp.Bounds()
-
-	dataSlice = make([][]byte, bounds.Size().Y) // create 1D slice size columns
+	//temp := 0
+	dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		dataSlice[y] = make([]byte, bounds.Size().X) // create 2D slice size rows
+		dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			//dataSlice[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 			r, g, b, _ := imgTemp.At(x, y).RGBA()
-			dataSlice[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
+			red := float32(r) / 200
+			green := float32(g) / 200
+			blue := float32(b) / 200
+
+			dataSlice[y][x] = ((red + green + blue) / 3) / 255
 		}
 	}
 	return &dataSlice
 }
 
-func Print2DSlice(data [][]byte) {
-	for i := 0; i < len(data); i++ {
-		for j := 0; j < len(data[i]); j++ {
+func Print2DSlice(data [][]float32) {
+	for i := 0; i < len(data)-460; i++ {
+		for j := 0; j < len(data[i])-620; j++ {
 			fmt.Print(data[i][j], " ")
 		}
 		fmt.Println()

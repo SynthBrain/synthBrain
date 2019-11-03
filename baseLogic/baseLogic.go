@@ -15,6 +15,10 @@ func InitLogic() *Logic {
 }
 
 func (l *Logic) Update() {
+	l.getDataFromChan()
+}
+
+func (l *Logic) getDataFromChan () {
 	select {
 	case dataKey := <-l.VisionChan:
 		l.data = *dataKey

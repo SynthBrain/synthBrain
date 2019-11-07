@@ -19,7 +19,7 @@ var dataImage image.Image
 var dataSlice [][]float32
 
 // StartWebCam
-func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
+func StartWebCam(chFlag chan bool, visionChan chan *[][]float32, ImgChan chan *image.Image) {
 	//data := new(Data)
 
 	// set to use a video capture device 0
@@ -62,6 +62,8 @@ func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
 		dataImage, _ = img.ToImage()
 		select {
 		case visionChan <- ImgToDataSlice(&dataImage):
+			ImgChan <- &dataImage
+			gocv.IMWrite("C:/Users/synth/go/src/github.com/SynthBrain/synthBrain/data/webCam.jpg", img)
 		default:
 			time.Sleep(50 * time.Millisecond)
 		}
@@ -71,6 +73,8 @@ func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
 
 		//write jpg file
 		//gocv.IMWrite("C:/Users/synth/go/src/github.com/SynthBrain/synthBrain/assets/webCam.jpg", img)
+		
+		//gocv.IMWrite(app.DirData() + "webCam.jpg", img)
 
 		//window.WaitKey(1)
 		if len(chFlag) > 0 {

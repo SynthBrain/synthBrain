@@ -9,12 +9,14 @@ import (
 	"github.com/SynthBrain/synthBrain/baseLogic"
 	_"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
+	"github.com/g3n/engine/texture"
 	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/material"
+	"github.com/g3n/engine/gls"
+	"github.com/g3n/engine/gui"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/helper"
+	
 )
 
 func init() {
@@ -32,6 +34,7 @@ type Level struct {
 	WebCam  *gui.Button
 	// mesh *graphic.Points
 	// positions math32.ArrayF32
+	angl float32
 }
 
 // Start is called once at the start of the demo.
@@ -42,7 +45,7 @@ func (level *Level) Start(app *App) {
 	// Create and add a button to the scene
 	level.onOff = false
 	chOnOffFlag := make(chan bool, 1)
-	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan)
+	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan, level.logic.ImgChan)
 	app.DemoPanel().Add(level.WebCam)
 
 	level.Exit = appGui.Exit(10, 40, &level.onOff, app.Application, chOnOffFlag)
@@ -103,6 +106,26 @@ func (level *Level) Update(app *App, deltaTime time.Duration) {
 	//****************************DEMO*************************************
 	// get data from baseLogic and use data for update 3D objects on scene
 	level.make3DLayer(0, 0, *level.logic.GetData(), app)
+
+
+	// Loads texture from image
+	texfile := app.DirData() + "\\webCam.jpg"//"/images/tiger1.jpg"
+	tex2, err := texture.NewTexture2DFromImage(texfile)
+
+	//tex2, err := texture.NewTexture2DFromRGBA()
+	if err != nil {
+		app.Log().Fatal("Error:%s loading texture:%s", err, texfile)
+	}
+	// Creates plane2
+	plane2_geom := geometry.NewPlane(640, 480)
+	plane2_mat := material.NewStandard(&math32.Color{1, 1, 1})
+	plane2_mat.SetSide(material.SideDouble)
+	plane2_mat.AddTexture(tex2)
+	plane2 := graphic.NewMesh(plane2_geom, plane2_mat)
+	plane2.SetPosition(320, 3, 240)
+	level.angl = -1.57
+	plane2.RotateX(level.angl)
+	app.Scene().Add(plane2)
 }
 
 // Cleanup is called once at the end of the demo.

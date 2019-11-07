@@ -2,20 +2,22 @@ package appGui
 
 import (
 	"fmt"
+	"image"
+	"time"
+
 	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/app"
 	"github.com/g3n/engine/gui"
-	"time"
 )
 
-func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]float32) *gui.Button {
+func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]float32, ImgChan chan *image.Image) *gui.Button {
 	button := gui.NewButton("WebCam")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {
 		// new gorutine for non-block app
 		if *onOff == false {
 			fmt.Println("start WebCam")
-			go vision.StartWebCam(chFlag, visionChan)
+			go vision.StartWebCam(chFlag, visionChan, ImgChan)
 			*onOff = true
 		} else {
 			//fmt.Println("stop WebCam")

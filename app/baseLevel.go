@@ -2,21 +2,19 @@ package app
 
 import (
 	_ "fmt"
-	_"math/rand"
+	_ "math/rand"
 	"time"
 
 	"github.com/SynthBrain/synthBrain/appGui"
 	"github.com/SynthBrain/synthBrain/baseLogic"
-	_"github.com/SynthBrain/synthBrain/vision"
+	_ "github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/texture"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/gls"
+	"github.com/g3n/engine/graphic"
 	"github.com/g3n/engine/gui"
+	"github.com/g3n/engine/material"
 	"github.com/g3n/engine/math32"
 	"github.com/g3n/engine/util/helper"
-	
 )
 
 func init() {
@@ -32,7 +30,7 @@ type Level struct {
 	Restart *gui.Button
 	Exit    *gui.Button
 	WebCam  *gui.Button
-	// mesh *graphic.Points
+	mesh *graphic.Points
 	// positions math32.ArrayF32
 	angl float32
 }
@@ -45,7 +43,7 @@ func (level *Level) Start(app *App) {
 	// Create and add a button to the scene
 	level.onOff = false
 	chOnOffFlag := make(chan bool, 1)
-	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan, level.logic.ImgChan)
+	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan)
 	app.DemoPanel().Add(level.WebCam)
 
 	level.Exit = appGui.Exit(10, 40, &level.onOff, app.Application, chOnOffFlag)
@@ -54,78 +52,20 @@ func (level *Level) Start(app *App) {
 	// Create axes helper
 	axes := helper.NewAxes(2)
 	app.Scene().Add(axes)
-
-	// //Creates geometry
-	// geom := geometry.NewGeometry()
-	// positions := math32.NewArrayF32(0, 0)
-	// colors := math32.NewArrayF32(0, 16)
-
-	// numPoints := 300000
-	// coord := float32(10)
-	// for i := 0; i < numPoints; i++ {
-	// 	var vertex math32.Vector3
-	// 	vertex.Set(
-	// 		rand.Float32()*coord, //-coord/2,
-	// 		rand.Float32()*coord, //-coord/2,
-	// 		rand.Float32()*coord, //-coord/2,
-	// 	)
-	// 	positions.AppendVector3(&vertex)
-	// 	colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
-	// }
-
-	//// for i := 0; i < 100000; i++{
-	//// 	positions.Append(float32(rand.Int31n(50)), float32(rand.Int31n(50)), float32(rand.Int31n(50)))
-	//// 	colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
-	//// 	//colors.Append(1, 0, 0)
-	//// }
-
-	// geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
-	// geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
-	// positions = nil // Positions cannot be used after transfering to VBO
-	// colors = nil
-
-	// // Creates point material
-	// //mat := material.NewPoint(&math32.Color{0, 0, 0})
-	// mat := material.NewBasic()
-	// //mat.SetSize(50)
-
-	// // Creates points mesh
-	// mesh := graphic.NewPoints(geom, mat)
-	// mesh.SetScale(1, 1, 1)
-	// //a.Scene().Add(t.mesh)
-	// app.Scene().AddAt(1, mesh)
 }
 
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
-	// vision.ReadImg(app.dirData, "/0.jpg")
-
-	// update baseLogic.upd()
 	level.logic.Update()
-	app.Scene().RemoveAll(true)
-	//****************************DEMO*************************************
-	// get data from baseLogic and use data for update 3D objects on scene
-	level.make3DLayer(0, 0, *level.logic.GetData(), app)
-
-
-	// Loads texture from image
-	texfile := app.DirData() + "\\webCam.jpg"//"/images/tiger1.jpg"
-	tex2, err := texture.NewTexture2DFromImage(texfile)
-
-	//tex2, err := texture.NewTexture2DFromRGBA()
-	if err != nil {
-		app.Log().Fatal("Error:%s loading texture:%s", err, texfile)
+	if(level.logic.GetReady()){
+		app.Scene().ChildAt(0).Dispose()
+		app.Scene().RemoveAll(true)
+		level.make3DLayer(0, app)
 	}
-	// Creates plane2
-	plane2_geom := geometry.NewPlane(640, 480)
-	plane2_mat := material.NewStandard(&math32.Color{1, 1, 1})
-	plane2_mat.SetSide(material.SideDouble)
-	plane2_mat.AddTexture(tex2)
-	plane2 := graphic.NewMesh(plane2_geom, plane2_mat)
-	plane2.SetPosition(320, 3, 240)
-	level.angl = -1.57
-	plane2.RotateX(level.angl)
-	app.Scene().Add(plane2)
+}
+
+func (level *Level) Dispose() {
+	level.mesh.Dispose()
 }
 
 // Cleanup is called once at the end of the demo.
@@ -133,40 +73,23 @@ func (level *Level) Cleanup(app *App) {
 	app.Scene().RemoveAll(true)
 }
 
-func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]float32, app *App) {
+func (level *Level) make3DLayer(index float32, app *App) {
 	// Creates geometry
 	geom := geometry.NewGeometry()
 	positions := math32.NewArrayF32(0, 0)
 	colors := math32.NewArrayF32(0, 16)
 
-	//numPoints := size
-	//coord := float32(10)
-	// for i := 0; i < numPoints; i++ {
-	// 	var vertex math32.Vector3
-	// 	vertex.Set(
-	// 		coords[i].Y,
-	// 		coords[i].X,
-	// 		coords[i].Z,
-	// 	)
-	// 	coords[i] = coords / 255
-	// 	positions.AppendVector3(&vertex)
-	// 	//colors.Append(rand.Float32(), rand.Float32(), rand.Float32())
-	// 	colors.Append(coords, coords, coords)
-	// }
-
-	// ПЛОХОЙ ВАРИАНТ РИСОВАНИЯ СЦЕНЫ
-	for i := 0; i < 480; i++ {
-		for j := 0; j < 640; j++ {
-			temp := coords[*math32.NewVector3(float32(i), float32(j), 0)]
-			var vertex math32.Vector3
+	var vertex math32.Vector3
+	for i := 0; i < len(level.logic.Data); i++ {
+		for j := 0; j < len(level.logic.Data[0]); j++ {
+			color := level.logic.Data[i][j]
 			vertex.Set(
 				float32(j),
-				0,
+				index,
 				float32(i),
 			)
-			//temp = temp / 100
 			positions.AppendVector3(&vertex)
-			colors.Append(float32(temp), float32(temp), float32(temp))
+			colors.Append(float32(color), float32(color), float32(color))
 		}
 	}
 
@@ -181,8 +104,6 @@ func (level *Level) make3DLayer(index int, size int, coords map[math32.Vector3]f
 	//mat.SetSize(50)
 
 	// Creates points mesh
-	mesh := graphic.NewPoints(geom, mat)
-	//mesh.SetScale(1, 1, 1)
-	//app.Scene().Add(mesh)
-	app.Scene().AddAt(index, mesh)
+	level.mesh = graphic.NewPoints(geom, mat)
+	app.Scene().Add(level.mesh)
 }

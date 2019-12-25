@@ -19,7 +19,7 @@ var dataImage image.Image
 var dataSlice [][]float32
 
 // StartWebCam
-func StartWebCam(chFlag chan bool, visionChan chan *[][]float32, ImgChan chan *image.Image) {
+func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
 	//data := new(Data)
 
 	// set to use a video capture device 0
@@ -49,6 +49,20 @@ func StartWebCam(chFlag chan bool, visionChan chan *[][]float32, ImgChan chan *i
 	}
 	//imgVision.Bounds().
 
+	// init Part of Memory for img Data ************************
+	if ok := webcam.Read(&img); !ok {
+		//fmt.Printf("cannot read device %v\n", deviceID)
+		return
+	}
+	if img.Empty() {
+		return
+	} else {
+		dataImage, _ = img.ToImage()
+		initMemory(&dataImage)
+	}
+	//**************************************
+
+
 	fmt.Printf("start reading camera device: %v\n", deviceID)
 	for {
 		if ok := webcam.Read(&img); !ok {
@@ -62,8 +76,8 @@ func StartWebCam(chFlag chan bool, visionChan chan *[][]float32, ImgChan chan *i
 		dataImage, _ = img.ToImage()
 		select {
 		case visionChan <- ImgToDataSlice(&dataImage):
-			ImgChan <- &dataImage
-			gocv.IMWrite("C:/Users/synth/go/src/github.com/SynthBrain/synthBrain/data/webCam.jpg", img)
+			//ImgChan <- &dataImage
+			//gocv.IMWrite("C:/Users/synth/go/src/github.com/SynthBrain/synthBrain/data/webCam.jpg", img)
 		default:
 			time.Sleep(50 * time.Millisecond)
 		}
@@ -100,14 +114,15 @@ func ReadImg(dataDir string, name string) {
 }
 
 // ImgToDataSlice convert image to slice
+// Переделать! инициализировать раз а не так как сейчас
 func ImgToDataSlice(img *image.Image) *[][]float32 {
 	//data := dataSlice
 	imgTemp := *img
 	bounds := imgTemp.Bounds()
 	//temp := 0
-	dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
+	//dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
+		//dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			//dataSlice[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 			r, g, b, _ := imgTemp.At(x, y).RGBA()
@@ -127,5 +142,14 @@ func Print2DSlice(data [][]float32) {
 			fmt.Print(data[i][j], " ")
 		}
 		fmt.Println()
+	}
+}
+
+func initMemory(img *image.Image) {
+	imgTemp := *img
+	bounds := imgTemp.Bounds()
+	dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
 	}
 }

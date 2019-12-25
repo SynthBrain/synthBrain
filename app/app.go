@@ -90,10 +90,10 @@ func usage() {
 }
 
 const (
-	progName = "G3N Demo" // TODO set title (create pair of files for build tags)
-	execName = "g3nd"
+	progName = "Light Cube" // TODO set title (create pair of files for build tags)
+	execName = "LightCube"
 	vmajor   = 0
-	vminor   = 6
+	vminor   = 1
 )
 
 // Create creates the G3ND application using the specified map of demos
@@ -103,7 +103,7 @@ func Create() *App {
 	a.Application = app.App()
 
 	// Creates application logger
-	a.log = logger.New("G3ND", nil)
+	a.log = logger.New("LightCube", nil)
 	a.log.AddWriter(logger.NewConsole(false))
 	a.log.SetFormat(logger.FTIME | logger.FMICROS)
 	a.log.SetLevel(logger.DEBUG)
@@ -327,7 +327,7 @@ func (a *App) buildGui(demoMap map[string]IDemo) {
 	// stays over the gui panel when opened.
 	headerColor := math32.Color4{13.0 / 256.0, 41.0 / 256.0, 62.0 / 256.0, 1}
 	lightTextColor := math32.Color4{0.8, 0.8, 0.8, 1}
-	header := gui.NewPanel(600, 20)
+	header := gui.NewPanel(600, 25)
 	header.SetBorders(0, 0, 1, 0)
 	header.SetPaddings(4, 4, 4, 4)
 	header.SetColor4(&headerColor)

@@ -503,6 +503,8 @@ func (a *App) setupScene() {
 	a.camera.UpdateSize(5)
 	a.camera.LookAt(&math32.Vector3{0, 0, 0}, &math32.Vector3{0, 1, 0})
 	a.camera.SetProjection(camera.Perspective)
+	a.camera.SetFar(10000)
+	a.camera.SetNear(0.01)
 	a.orbit.Reset()
 
 	// If audio active, resets global listener parameters

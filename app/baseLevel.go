@@ -2,6 +2,7 @@ package app
 
 import (
 	_ "fmt"
+	"github.com/g3n/engine/texture"
 	_ "math/rand"
 	"time"
 
@@ -31,8 +32,13 @@ type Level struct {
 	Exit    *gui.Button
 	WebCam  *gui.Button
 	mesh *graphic.Points
+	generalSphere *graphic.Mesh
+
+	plane *graphic.Mesh
 	// positions math32.ArrayF32
 	angl float32
+
+	flag bool
 }
 
 // Start is called once at the start of the demo.
@@ -41,6 +47,7 @@ func (level *Level) Start(app *App) {
 	level.logic = baseLogic.InitLogic()
 
 	// Create and add a button to the scene
+	level.flag = true
 	level.onOff = false
 	chOnOffFlag := make(chan bool, 1)
 	level.WebCam = appGui.WebCam(10, 10, &level.onOff, chOnOffFlag, level.logic.VisionChan)
@@ -50,22 +57,56 @@ func (level *Level) Start(app *App) {
 	app.DemoPanel().Add(level.Exit)
 
 	// Create axes helper
-	axes := helper.NewAxes(2)
+	axes := helper.NewAxes(30)
 	app.Scene().Add(axes)
+
+	// Creates generalSphere
+	level.makeSphere(app, 1000, *math32.NewVector3(0, 0,0))
+	// start electric
+	level.makeSphere(app, 100, *math32.NewVector3(0, -500,0))
+
+	// vision
+	level.makeSphere(app, 500, *math32.NewVector3(500, 0,0))
+	// motion system for Vision
+	level.makeSphere(app, 250, *math32.NewVector3(500, 625,0))
+
+	// sound
+	level.makeSphere(app, 500, *math32.NewVector3(-500, 0,0))
+
+	// motivation
+	level.makeSphere(app, 50, *math32.NewVector3(0, -750,0))
+
+	// Create plane with VisionData**********************************
+	//level.initInputDataPlane(app)
+	//*****************************************************************
 }
 
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
 	level.logic.Update()
+	//level.updPlaneMaterial(app)
 	if(level.logic.GetReady()){
-		app.Scene().ChildAt(0).Dispose()
-		app.Scene().RemoveAll(true)
-		level.make3DLayer(0, app)
+		level.Dispose(app)
+		level.inputLayerVision(0, app)
+
+		//*************************************
+		//if (level.flag) {
+		//	level.initGeom(app)
+		//	//level.flag = false
+		//}
+		//level.initMaterial(app)
+		//level.updDotColor(app)
+		//app.Scene().Add(level.mesh)
+		//*************************************
 	}
 }
 
-func (level *Level) Dispose() {
-	level.mesh.Dispose()
+func (level *Level) Dispose(app *App) {
+	//fmt.Printf("Length: ",  len(app.Scene().Children()))
+	for i := len(app.Scene().Children()); i > 7; i-- {
+		app.Scene().ChildAt(i-1).Dispose()
+		app.Scene().RemoveAt(i-1)
+	}
 }
 
 // Cleanup is called once at the end of the demo.
@@ -73,16 +114,82 @@ func (level *Level) Cleanup(app *App) {
 	app.Scene().RemoveAll(true)
 }
 
-func (level *Level) make3DLayer(index float32, app *App) {
+func (level *Level) makeSphere(app *App, size float64, pos math32.Vector3){
+	geom := geometry.NewSphere(size, 32, 16)
+	mat := material.NewStandard(&math32.Color{1, 1, 1})
+	mat.SetWireframe(true)
+	mat.SetSide(material.SideDouble)
+	level.generalSphere = graphic.NewMesh(geom, mat)
+	level.generalSphere.SetPosition(pos.X, pos.Y, pos.Z)
+	app.Scene().Add(level.generalSphere)
+}
+
+func (level *Level) initGeom(app *App) {
+	geom := geometry.NewGeometry()
+	positions := math32.NewArrayF32(0, 0)
+
+	var vertex math32.Vector3
+	for i := 0; i < len(level.logic.DataVision); i++ {
+		for j := 0; j < len(level.logic.DataVision[0]); j++ {
+			vertex.Set(
+				float32(j),
+				0,
+				float32(i),
+			)
+			positions.AppendVector3(&vertex)
+		}
+	}
+
+	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
+	level.mesh = graphic.NewPoints(geom, nil)
+	//app.Scene().Add(level.mesh)
+}
+
+func (level *Level) initMaterial(app *App) {
+	tex, err := texture.NewTexture2DFromImage(app.DirData() + "/images/" + "snowflake1.png")
+	if err != nil {
+		app.Log().Fatal("Error loading texture: %s", err)
+	}
+
+	mat := material.NewPoint(&math32.Color{1, 1, 1})
+	mat.SetTransparent(true)
+	mat.SetOpacity(0.6)
+	mat.AddTexture(tex)
+	mat.SetSize(600)
+	mat.SetBlending(material.BlendAdditive)
+	mat.SetDepthMask(false)
+	level.mesh.AddMaterial(level.mesh, mat, 0, len(level.logic.DataVision) * len(level.logic.DataVision[0]))
+}
+
+func (level *Level) updDotColor(app *App) {
+	// Get graphic object
+	gr := level.mesh.GetGraphic()
+	imat := gr.GetMaterial(0)
+
+	type matI interface {
+		EmissiveColor() math32.Color
+		SetEmissiveColor(*math32.Color)
+	}
+
+	if v, ok := imat.(matI); ok {
+		if em := v.EmissiveColor(); em.R == 1 && em.G == 1 && em.B == 1 {
+			v.SetEmissiveColor(&math32.Color{0, 0, 0})
+		} else {
+			v.SetEmissiveColor(&math32.Color{1, 1, 1})
+		}
+	}
+}
+
+func (level *Level) inputLayerVision(index float32, app *App) {
 	// Creates geometry
 	geom := geometry.NewGeometry()
 	positions := math32.NewArrayF32(0, 0)
 	colors := math32.NewArrayF32(0, 16)
 
 	var vertex math32.Vector3
-	for i := 0; i < len(level.logic.Data); i++ {
-		for j := 0; j < len(level.logic.Data[0]); j++ {
-			color := level.logic.Data[i][j]
+	for i := 0; i < len(level.logic.DataVision); i++ {
+		for j := 0; j < len(level.logic.DataVision[0]); j++ {
+			color := level.logic.DataVision[i][j]
 			vertex.Set(
 				float32(j),
 				index,
@@ -106,4 +213,38 @@ func (level *Level) make3DLayer(index float32, app *App) {
 	// Creates points mesh
 	level.mesh = graphic.NewPoints(geom, mat)
 	app.Scene().Add(level.mesh)
+}
+
+func (level *Level) updPlaneMaterial(app *App) {
+	texfile := app.DirData() + "\\webCam.jpg"
+	tex, err := texture.NewTexture2DFromImage(texfile)
+	if err != nil {
+		return
+	} else {
+		plane_mat := material.NewStandard(&math32.Color{1, 1, 1})
+		plane_mat.SetSide(material.SideDouble)
+		plane_mat.AddTexture(tex)
+		level.plane.SetMaterial(plane_mat)
+	}
+}
+
+func (level *Level) initInputDataPlane(app *App) {
+	// Create plane with VisionData**********************************
+	texfile := app.DirData() + "\\webCam.jpg"//"/images/tiger1.jpg"
+	tex, err := texture.NewTexture2DFromImage(texfile)
+	if err != nil {
+		//app.Log().Fatal("Error:%s loading texture:%s", err, texfile)
+		return
+	} else {
+		// Creates plane2
+		plane_geom := geometry.NewPlane(640, 480)
+		plane_mat := material.NewStandard(&math32.Color{1, 1, 1})
+		plane_mat.SetSide(material.SideDouble)
+		plane_mat.AddTexture(tex)
+		level.plane = graphic.NewMesh(plane_geom, plane_mat)
+		level.plane.SetPosition(320, -3, 240)
+		level.angl = -1.57
+		level.plane.RotateX(level.angl)
+		app.Scene().Add(level.plane)
+	}
 }

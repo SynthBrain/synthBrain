@@ -15,7 +15,10 @@ package baseLogic
 
 type Logic struct {
 	VisionChan chan *[][]float32
-	Data       [][]float32
+	SoundChan  chan *[][]float32
+
+	DataVision       [][]float32
+	DataSound        [][]float32
 
 	flagReady  bool
 }
@@ -23,26 +26,27 @@ type Logic struct {
 func InitLogic() *Logic {
 	return &Logic{
 		VisionChan: make(chan *[][]float32, 1),
+		SoundChan:  make(chan *[][]float32, 1),
 	}
 }
 
 func (l *Logic) Update() {
-	l.getDataFromChan()
+	l.getDataFromVisionChan()
 }
 
-func (l *Logic) getDataFromChan() {
+func (l *Logic) getDataFromVisionChan() {
 	select {
 	case dataKey := <-l.VisionChan:
+		l.DataVision = *dataKey
 		l.flagReady = true
-		l.Data = *dataKey
 	default:
 		l.flagReady = false
 	}
 }
 
 // отдавать данные для рисования сцени
-func (l *Logic) GetData() *[][]float32 {
-	return &l.Data
+func (l *Logic) GetDataVision() *[][]float32 {
+	return &l.DataVision
 }
 
 func (l *Logic) GetReady() bool{

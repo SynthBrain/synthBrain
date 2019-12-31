@@ -32,6 +32,7 @@ type Level struct {
 	Exit    *gui.Button
 	WebCam  *gui.Button
 	mesh *graphic.Points
+	meshTest *graphic.Points
 	generalSphere *graphic.Mesh
 
 	plane *graphic.Mesh
@@ -62,7 +63,7 @@ func (level *Level) Start(app *App) {
 
 	// Creates generalSphere
 	level.makeSphere(app, 1000, *math32.NewVector3(0, 0,0))
-	// start electric
+	// start all sensor part from this place
 	level.makeSphere(app, 100, *math32.NewVector3(0, -500,0))
 
 	// vision
@@ -76,6 +77,7 @@ func (level *Level) Start(app *App) {
 	// motivation
 	level.makeSphere(app, 50, *math32.NewVector3(0, -750,0))
 
+	level.initInputLayerVision(app)
 	// Create plane with VisionData**********************************
 	//level.initInputDataPlane(app)
 	//*****************************************************************
@@ -84,26 +86,15 @@ func (level *Level) Start(app *App) {
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
 	level.logic.Update()
-	//level.updPlaneMaterial(app)
 	if(level.logic.GetReady()){
-		level.Dispose(app)
-		level.inputLayerVision(0, app)
-
-		//*************************************
-		//if (level.flag) {
-		//	level.initGeom(app)
-		//	//level.flag = false
-		//}
-		//level.initMaterial(app)
-		//level.updDotColor(app)
-		//app.Scene().Add(level.mesh)
-		//*************************************
+		//level.Dispose(app)
+		level.DrawInputLayerVision(app)
 	}
 }
 
 func (level *Level) Dispose(app *App) {
 	//fmt.Printf("Length: ",  len(app.Scene().Children()))
-	for i := len(app.Scene().Children()); i > 7; i-- {
+	for i := len(app.Scene().Children()); i > 8; i-- {
 		app.Scene().ChildAt(i-1).Dispose()
 		app.Scene().RemoveAt(i-1)
 	}
@@ -112,6 +103,56 @@ func (level *Level) Dispose(app *App) {
 // Cleanup is called once at the end of the demo.
 func (level *Level) Cleanup(app *App) {
 	app.Scene().RemoveAll(true)
+}
+
+func (level *Level) DrawInputLayerVision(app *App) {
+	temp := level.mesh.GetGeometry().VBOs()
+	positions := math32.NewArrayF32(0, 0)
+	colors := math32.NewArrayF32(0, 16)
+	var vertex math32.Vector3
+	for i := 0; i < len(level.logic.DataVision); i++ {
+		for j := 0; j < len(level.logic.DataVision[0]); j++ {
+			color := level.logic.DataVision[i][j]
+			vertex.Set(
+				float32(j),
+				0,
+				float32(i),
+			)
+			positions.AppendVector3(&vertex)
+			colors.Append(float32(color), float32(color), float32(color))
+		}
+	}
+	if(level.flag){
+		temp[0].SetBuffer(positions)
+		level.flag = false
+	}
+	//temp[0].SetBuffer(positions)
+	temp[1].SetBuffer(colors)
+}
+
+func (level *Level) initInputLayerVision(app *App){
+	geom := geometry.NewGeometry()
+	colors := math32.NewArrayF32(0, 16)
+	color := 1
+	colors.Append(float32(color), float32(color), float32(color))
+	positions := math32.NewArrayF32(0, 0)
+	positions.Append(
+		0, 0, 0,
+	)
+	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
+	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+	positions = nil // Positions cannot be used after transfering to VBO
+	colors = nil
+
+	// Creates point material
+	//mat := material.NewPoint(&math32.Color{0, 0, 0})
+	mat := material.NewBasic()
+	//mat.SetSize(50)
+
+	// Creates points mesh
+	level.mesh = graphic.NewPoints(geom, mat)
+	//level.mesh.SetScale(1, 1, 1)
+	app.Scene().Add(level.mesh)
 }
 
 func (level *Level) makeSphere(app *App, size float64, pos math32.Vector3){
@@ -161,59 +202,41 @@ func (level *Level) initMaterial(app *App) {
 	level.mesh.AddMaterial(level.mesh, mat, 0, len(level.logic.DataVision) * len(level.logic.DataVision[0]))
 }
 
-func (level *Level) updDotColor(app *App) {
-	// Get graphic object
-	gr := level.mesh.GetGraphic()
-	imat := gr.GetMaterial(0)
 
-	type matI interface {
-		EmissiveColor() math32.Color
-		SetEmissiveColor(*math32.Color)
-	}
-
-	if v, ok := imat.(matI); ok {
-		if em := v.EmissiveColor(); em.R == 1 && em.G == 1 && em.B == 1 {
-			v.SetEmissiveColor(&math32.Color{0, 0, 0})
-		} else {
-			v.SetEmissiveColor(&math32.Color{1, 1, 1})
-		}
-	}
-}
-
-func (level *Level) inputLayerVision(index float32, app *App) {
-	// Creates geometry
-	geom := geometry.NewGeometry()
-	positions := math32.NewArrayF32(0, 0)
-	colors := math32.NewArrayF32(0, 16)
-
-	var vertex math32.Vector3
-	for i := 0; i < len(level.logic.DataVision); i++ {
-		for j := 0; j < len(level.logic.DataVision[0]); j++ {
-			color := level.logic.DataVision[i][j]
-			vertex.Set(
-				float32(j),
-				index,
-				float32(i),
-			)
-			positions.AppendVector3(&vertex)
-			colors.Append(float32(color), float32(color), float32(color))
-		}
-	}
-
-	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
-	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
-	positions = nil // Positions cannot be used after transfering to VBO
-	colors = nil
-
-	// Creates point material
-	//mat := material.NewPoint(&math32.Color{0, 0, 0})
-	mat := material.NewBasic()
-	//mat.SetSize(50)
-
-	// Creates points mesh
-	level.mesh = graphic.NewPoints(geom, mat)
-	app.Scene().Add(level.mesh)
-}
+//func (level *Level) inputLayerVision(index float32, app *App) {
+//	// Creates geometry
+//	geom := geometry.NewGeometry()
+//	positions := math32.NewArrayF32(0, 0)
+//	colors := math32.NewArrayF32(0, 16)
+//
+//	var vertex math32.Vector3
+//	for i := 0; i < len(level.logic.DataVision); i++ {
+//		for j := 0; j < len(level.logic.DataVision[0]); j++ {
+//			color := level.logic.DataVision[i][j]
+//			vertex.Set(
+//				float32(j),
+//				index,
+//				float32(i),
+//			)
+//			positions.AppendVector3(&vertex)
+//			colors.Append(float32(color), float32(color), float32(color))
+//		}
+//	}
+//
+//	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
+//	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+//	positions = nil // Positions cannot be used after transfering to VBO
+//	colors = nil
+//
+//	// Creates point material
+//	//mat := material.NewPoint(&math32.Color{0, 0, 0})
+//	mat := material.NewBasic()
+//	//mat.SetSize(50)
+//
+//	// Creates points mesh
+//	level.mesh = graphic.NewPoints(geom, mat)
+//	app.Scene().Add(level.mesh)
+//}
 
 func (level *Level) updPlaneMaterial(app *App) {
 	texfile := app.DirData() + "\\webCam.jpg"

@@ -499,7 +499,7 @@ func (a *App) setupScene() {
 	a.ambLight.SetIntensity(0.5)
 
 	// Reset camera
-	a.camera.SetPosition(0, 0, 5)
+	a.camera.SetPosition(30, 30, 30)
 	a.camera.UpdateSize(5)
 	a.camera.LookAt(&math32.Vector3{0, 0, 0}, &math32.Vector3{0, 1, 0})
 	a.camera.SetProjection(camera.Perspective)

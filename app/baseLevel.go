@@ -28,11 +28,11 @@ type Level struct {
 
 	onOff bool
 	// GUI
-	Restart *gui.Button
-	Exit    *gui.Button
-	WebCam  *gui.Button
-	mesh *graphic.Points
-	meshTest *graphic.Points
+	Restart       *gui.Button
+	Exit          *gui.Button
+	WebCam        *gui.Button
+	mesh          *graphic.Points
+	meshLightCube *graphic.Points
 	generalSphere *graphic.Mesh
 
 	plane *graphic.Mesh
@@ -61,23 +61,24 @@ func (level *Level) Start(app *App) {
 	axes := helper.NewAxes(30)
 	app.Scene().Add(axes)
 
-	// Creates generalSphere
-	level.makeSphere(app, 1000, *math32.NewVector3(0, 0,0))
-	// start all sensor part from this place
-	level.makeSphere(app, 100, *math32.NewVector3(0, -500,0))
+	// // Creates generalSphere
+	// level.makeSphere(app, 1000, *math32.NewVector3(0, 0,0))
+	// // start all sensor part from this place
+	// level.makeSphere(app, 100, *math32.NewVector3(0, -500,0))
 
-	// vision
-	level.makeSphere(app, 500, *math32.NewVector3(500, 0,0))
-	// motion system for Vision
-	level.makeSphere(app, 250, *math32.NewVector3(500, 625,0))
+	// // vision
+	// level.makeSphere(app, 500, *math32.NewVector3(500, 0,0))
+	// // motion system for Vision
+	// level.makeSphere(app, 250, *math32.NewVector3(500, 625,0))
 
-	// sound
-	level.makeSphere(app, 500, *math32.NewVector3(-500, 0,0))
+	// // sound
+	// level.makeSphere(app, 500, *math32.NewVector3(-500, 0,0))
 
-	// motivation
-	level.makeSphere(app, 50, *math32.NewVector3(0, -750,0))
+	// // motivation
+	// level.makeSphere(app, 50, *math32.NewVector3(0, -750,0))
 
 	level.initInputLayerVision(app)
+	level.initLightCube(app)
 	// Create plane with VisionData**********************************
 	//level.initInputDataPlane(app)
 	//*****************************************************************
@@ -89,12 +90,16 @@ func (level *Level) Update(app *App, deltaTime time.Duration) {
 	if(level.logic.GetReady()){
 		//level.Dispose(app)
 		level.DrawInputLayerVision(app)
+		level.DrawLightCube()
 	}
 }
 
 func (level *Level) Dispose(app *App) {
 	//fmt.Printf("Length: ",  len(app.Scene().Children()))
-	for i := len(app.Scene().Children()); i > 8; i-- {
+
+	// n equals objects on scene
+	n := 2
+	for i := len(app.Scene( ) .Children()); i > n; i-- {
 		app.Scene().ChildAt(i-1).Dispose()
 		app.Scene().RemoveAt(i-1)
 	}
@@ -109,30 +114,91 @@ func (level *Level) DrawInputLayerVision(app *App) {
 	temp := level.mesh.GetGeometry().VBOs()
 	positions := math32.NewArrayF32(0, 0)
 	colors := math32.NewArrayF32(0, 16)
-	var vertex math32.Vector3
-	for i := 0; i < len(level.logic.DataVision); i++ {
-		for j := 0; j < len(level.logic.DataVision[0]); j++ {
-			color := level.logic.DataVision[i][j]
-			vertex.Set(
-				float32(j),
-				0,
-				float32(i),
-			)
-			positions.AppendVector3(&vertex)
-			colors.Append(float32(color), float32(color), float32(color))
-		}
+	for key, value := range level.logic.DataVision {
+		positions.AppendVector3(&key)
+	 	colors.Append(float32(value.X / 255), float32(value.Y / 255), float32(value.Z / 255))
 	}
-	if(level.flag){
-		temp[0].SetBuffer(positions)
-		level.flag = false
-	}
-	//temp[0].SetBuffer(positions)
+	temp[0].SetBuffer(positions)
 	temp[1].SetBuffer(colors)
 }
 
+func (level *Level) DrawLightCube() {
+	temp := level.meshLightCube.GetGeometry().VBOs()
+	positions := math32.NewArrayF32(0, 0)
+	colors := math32.NewArrayF32(0, 16)
+	for key, _ := range level.logic.ActiveVectors {
+		if level.logic.LightCube[key].GetActive() {
+			positions.AppendVector3(&key)
+			colors.Append(1, 1, 1)
+		} else {
+			positions.AppendVector3(&key)
+			colors.Append(0, 0, 0)
+		}
+	}
+	temp[0].SetBuffer(positions)
+	temp[1].SetBuffer(colors)
+}
+	// var vertex math32.Vector3
+	// var tempI float32
+	// for i := 0; i < len(level.logic.DataVision); i++ {
+	// 	for j := 0; j < len(level.logic.DataVision[0]); j++ {
+	// 		if (j % 2.0 == 1) {
+ //			tempI = 0.5
+	// 		}
+	// 		color := level.logic.DataVision[i][j]
+	// 		vertex.Set(
+	// 			float32 j),
+	// 			0,
+	// 			float32(i)+ tempI,
+	// 		)
+	// 		positions.AppendVector3(&vertex)
+	// 		colors.Append(float32(color), float32(color), float32(color))
+	// 		level.logic.LightCub[vertex] = color
+	// 		// vertex1.Set(
+	// 		// 	float32(j),
+	// 		// 	1,
+	// 		// 	float32(i)+ tempI,
+	// 		// )
+	// 		// positions.AppendVector3(&vertex)
+	// 		// if _, ok := level.logic.LightCub[vertex]; ok {
+	// 		// 	level.logic.LightCub[vertex].PowerActivation = float32(level.logic.DataVision[i][j])
+	// 		// }else {
+	// 		// 	level.logic.LightCub[vertex] = baseLogic.NewNeuron()
+	// 		// }
+			
+	// 		tempI = 0
+	// 	}
+	// }
+	// if(level.flag){
+	// 	temp[0].SetBuffer(positions)
+	// 	level.flag = false
+	// }
+	// //temp[0].SetBuffer(positions) 
+	// temp[1].SetBuffer(colors)
+
+
+	// if(l.flagReady){
+	// 	var tempI float32
+	// 	var vectorKey math32.Vector3
+	// 	for i := 0; i < len(l.DataVision); i++ {
+	// 		for j := 0; j < len(l.DataVision[0]); j++ {
+	// 			if (j % 2.0 == 1) {
+	// 				tempI = 0.5
+	// 			}
+	// 			vectorKey.Set(float32(j), 0, float32(i) + tempI)
+	// 			l.LightCub[vectorKey] = NewNeuron()
+	// 			//temp := l.LightCub[vectorKey]
+	// 			//temp.PowerActivation = l.DataVision[i][j]
+	// 			l.LightCub[vectorKey].PowerActivation = l.DataVision[i][j]
+	// 			tempI = 0
+	// 		}
+	// 	}
+	// }
+//}
+
 func (level *Level) initInputLayerVision(app *App){
 	geom := geometry.NewGeometry()
-	colors := math32.NewArrayF32(0, 16)
+	colors := math32.NewArrayF32(0, 16) 
 	color := 1
 	colors.Append(float32(color), float32(color), float32(color))
 	positions := math32.NewArrayF32(0, 0)
@@ -155,57 +221,81 @@ func (level *Level) initInputLayerVision(app *App){
 	app.Scene().Add(level.mesh)
 }
 
-func (level *Level) makeSphere(app *App, size float64, pos math32.Vector3){
-	geom := geometry.NewSphere(size, 32, 16)
-	mat := material.NewStandard(&math32.Color{1, 1, 1})
-	mat.SetWireframe(true)
-	mat.SetSide(material.SideDouble)
-	level.generalSphere = graphic.NewMesh(geom, mat)
-	level.generalSphere.SetPosition(pos.X, pos.Y, pos.Z)
-	app.Scene().Add(level.generalSphere)
-}
-
-func (level *Level) initGeom(app *App) {
+func (level *Level) initLightCube(app *App){
 	geom := geometry.NewGeometry()
+	colors := math32.NewArrayF32(0, 16)
+	color := 1
+	colors.Append(float32(color), float32(color), float32(color))
 	positions := math32.NewArrayF32(0, 0)
-
-	var vertex math32.Vector3
-	for i := 0; i < len(level.logic.DataVision); i++ {
-		for j := 0; j < len(level.logic.DataVision[0]); j++ {
-			vertex.Set(
-				float32(j),
-				0,
-				float32(i),
-			)
-			positions.AppendVector3(&vertex)
-		}
-	}
-
+	positions.Append(
+		0, 0, 0,
+	)
 	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
-	level.mesh = graphic.NewPoints(geom, nil)
-	//app.Scene().Add(level.mesh)
-}
+	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
+	positions = nil // Positions cannot be used after transfering to VBO
+	colors = nil
 
-func (level *Level) initMaterial(app *App) {
-	tex, err := texture.NewTexture2DFromImage(app.DirData() + "/images/" + "snowflake1.png")
-	if err != nil {
-		app.Log().Fatal("Error loading texture: %s", err)
-	}
+	// Creates point material
+	//mat := material.NewPoint(&math32.Color{0, 0, 0})
+	mat := material.NewBasic()
+	//mat.SetSize(50)
 
-	mat := material.NewPoint(&math32.Color{1, 1, 1})
-	mat.SetTransparent(true)
-	mat.SetOpacity(0.6)
-	mat.AddTexture(tex)
-	mat.SetSize(600)
-	mat.SetBlending(material.BlendAdditive)
-	mat.SetDepthMask(false)
-	level.mesh.AddMaterial(level.mesh, mat, 0, len(level.logic.DataVision) * len(level.logic.DataVision[0]))
+	// Creates points mesh
+	level.meshLightCube = graphic.NewPoints(geom, mat)
+	//level.mesh.SetScale(1, 1, 1)
+	app.Scene().Add(level.meshLightCube)
 }
+// func (level *Level) makeSphere(app *App, size float64, pos math32.Vector3){
+// 	geom := geometry.NewSphere(size, 32, 16)
+// 	mat := material.NewStandard(&math32.Color{1, 1, 1})
+// 	mat.SetWireframe(true)
+// 	mat.SetSide(material.SideDouble)
+// 	level.generalSphere = graphic.NewMesh(geom, mat)
+// 	level.generalSphere.SetPosition(pos.X, pos.Y, pos.Z)
+// 	app.Scene().Add(level.generalSphere)
+// }
+
+// func (level *Level) initGeom(app *App) {
+// 	geom := geometry.NewGeometry()
+// 	positions := math32.NewArrayF32(0, 0)
+
+// 	var vertex math32.Vector3
+// 	for i := 0; i < len(level.logic.DataVision); i++ {
+// 		for j := 0; j < len(level.logic.DataVision[0]); j++ {
+// 			vertex.Set(
+// 				float32(j),
+// 				0,
+// 				float32(i),
+// 			)
+// 			positions.AppendVector3(&vertex)
+// 		}
+// 	}
+
+// 	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
+// 	level.mesh = graphic.NewPoints(geom, nil)
+// 	//app.Scene().Add(level.mesh)
+// }
+
+// func (level *Level) initMaterial(app *App) {
+// 	tex, err := texture.NewTexture2DFromImage(app.DirData() + "/images/" + "snowflake1.png")
+// 	if err != nil {
+// 		app.Log().Fatal("Error loading texture: %s", err)
+// 	}
+
+// 	mat := material.NewPoint(&math32.Color{1, 1, 1})
+// 	mat.SetTransparent(true)
+// 	mat.SetOpacity(0.6)
+// 	mat.AddTexture(tex)
+// 	mat.SetSize(600)
+// 	mat.SetBlending(material.BlendAdditive)
+// 	mat.SetDepthMask(false)
+// 	level.mesh.AddMaterial(level.mesh, mat, 0, len(level.logic.DataVision) * len(level.logic.DataVision[0]))
+// }
 
 
 //func (level *Level) inputLayerVision(index float32, app *App) {
 //	// Creates geometry
-//	geom := geometry.NewGeometry()
+//	geom := geometry.NewGeometry() 
 //	positions := math32.NewArrayF32(0, 0)
 //	colors := math32.NewArrayF32(0, 16)
 //
@@ -223,6 +313,7 @@ func (level *Level) initMaterial(app *App) {
 //		}
 //	}
 //
+
 //	geom.AddVBO(gls.NewVBO(positions).AddAttrib(gls.VertexPosition))
 //	geom.AddVBO(gls.NewVBO(colors).AddAttrib(gls.VertexColor))
 //	positions = nil // Positions cannot be used after transfering to VBO

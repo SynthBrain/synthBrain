@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"time"
-
+	"github.com/g3n/engine/math32"
 	"gocv.io/x/gocv"
 )
 
@@ -17,9 +17,11 @@ import (
 
 var dataImage image.Image
 var dataSlice [][]float32
+var dataMap map[math32.Vector3]math32.Vector3
 
 // StartWebCam
-func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
+//func StartWebCam(chFlag chan bool, visionChan chan *[][]float32) {
+func StartWebCam(chFlag chan bool, visionChan chan map[math32.Vector3]math32.Vector3) {
 	//data := new(Data)
 
 	// set to use a video capture device 0
@@ -105,18 +107,22 @@ func ReadImg(dataDir string, name string) {
 	dataDir = dataDir + name
 
 	reader, err := os.Open(dataDir)
-	m, _, err := image.Decode(reader)
+	//m, _, err := image.Decode(reader)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer reader.Close()
-	Print2DSlice(*ImgToDataSlice(&m))
+	//Print2DSlice(*ImgToDataSlice(&m))
 	fmt.Println()
 }
 
 // ImgToDataSlice convert image to slice
-// Переделать! инициализировать раз а не так как сейчас
-func ImgToDataSlice(img *image.Image) *[][]float32 {
+//func ImgToDataSlice(img *image.Image) *[][]float32 {
+func ImgToDataSlice(img *image.Image) map[math32.Vector3]math32.Vector3 {
+	var vertex math32.Vector3
+	var color math32.Vector3
+	var tempI float32
+	dataMap = make(map[math32.Vector3]math32.Vector3)
 	//data := dataSlice
 	imgTemp := *img
 	bounds := imgTemp.Bounds()
@@ -131,10 +137,25 @@ func ImgToDataSlice(img *image.Image) *[][]float32 {
 			green := float32(g) / 200
 			blue := float32(b) / 200
 
-			dataSlice[y][x] = ((red + green + blue) / 3) / 255
+			//dataSlice[y][x] = ((red + green + blue) / 3) / 255
+
+			if (x % 2.0 == 1) {
+				tempI = 0.5
+			}
+			vertex.Set(
+				float32(x),
+				0,
+				float32(y) + tempI,
+			)
+			color.Set(red, green, blue)
+			// передавать все три цвета в качесте вектора X = red Y = green Z = blue
+			//dataMap[vertex] = ((red + green + blue) / 3) / 255
+			dataMap[vertex] = color
+			tempI = 0
 		}
 	}
-	return &dataSlice
+	//return &dataSlice
+	return dataMap
 }
 
 func Print2DSlice(data [][]float32) {
@@ -147,10 +168,11 @@ func Print2DSlice(data [][]float32) {
 }
 
 func initMemory(img *image.Image) {
-	imgTemp := *img
-	bounds := imgTemp.Bounds()
-	dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
-	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
-	}
+	//dataMap = make(map[math32.Vector3]float32)
+	//imgTemp := *img
+	// bounds := imgTemp.Bounds()
+	// dataSlice = make([][]float32, bounds.Size().Y) // create 1D slice size columns
+	// for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+	// 	dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
+	// }
 }

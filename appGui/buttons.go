@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/g3n/engine/math32"
 	"github.com/SynthBrain/synthBrain/vision"
 	"github.com/g3n/engine/app"
 	"github.com/g3n/engine/gui"
 )
 
-func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]float32) *gui.Button {
+//func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan *[][]float32) *gui.Button {
+func WebCam(posX, posY float32, onOff *bool, chFlag chan bool, visionChan chan map[math32.Vector3]math32.Vector3) *gui.Button {
 	button := gui.NewButton("WebCam")
 	button.SetPosition(posX, posY)
 	button.Subscribe(gui.OnClick, func(name string, ev interface{}) {

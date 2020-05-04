@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"image"
 	"log"
+	"math"
 	"os"
 	"time"
+
 	"github.com/g3n/engine/math32"
 	"gocv.io/x/gocv"
 )
@@ -133,9 +135,17 @@ func ImgToDataSlice(img *image.Image) map[math32.Vector3]math32.Vector3 {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			//dataSlice[y][x] = byte(((b >> 8) + (g >> 8) + (r >> 8)) / 3)
 			r, g, b, _ := imgTemp.At(x, y).RGBA()
-			red := float32(r) / 200
-			green := float32(g) / 200
-			blue := float32(b) / 200
+			red := float32(r) / 255
+			green := float32(g) / 255
+			blue := float32(b) / 255
+
+			red = Round(float64(red), 0)
+			green = Round(float64(green), 0)
+			blue = Round(float64(blue), 0)
+
+			red = Round(float64(red / 255), 2)
+			green = Round(float64(green / 255), 2)
+			blue = Round(float64(blue / 255), 2)
 
 			//dataSlice[y][x] = ((red + green + blue) / 3) / 255
 
@@ -144,11 +154,10 @@ func ImgToDataSlice(img *image.Image) map[math32.Vector3]math32.Vector3 {
 			}
 			vertex.Set(
 				float32(x),
-				0,
+				-1,
 				float32(y) + tempI,
 			)
 			color.Set(red, green, blue)
-			// передавать все три цвета в качесте вектора X = red Y = green Z = blue
 			//dataMap[vertex] = ((red + green + blue) / 3) / 255
 			dataMap[vertex] = color
 			tempI = 0
@@ -175,4 +184,19 @@ func initMemory(img *image.Image) {
 	// for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 	// 	dataSlice[y] = make([]float32, bounds.Size().X) // create 2D slice size rows
 	// }
+}
+
+func Round(x float64, prec int) float32 {
+	var rounder float64
+	pow := math.Pow(10, float64(prec))
+	intermed := x * pow
+	_, frac := math.Modf(intermed)
+	if frac >= 0.5 {
+		rounder = math.Ceil(intermed)
+	} else {
+		rounder = math.Floor(intermed)
+	}
+	result := float32(rounder / pow)
+
+	return result
 }

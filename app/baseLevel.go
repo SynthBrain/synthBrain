@@ -33,6 +33,7 @@ type Level struct {
 	WebCam        *gui.Button
 	mesh          *graphic.Points
 	meshLightCube *graphic.Points
+	meshColorsLayer *graphic.Points
 	generalSphere *graphic.Mesh
 
 	plane *graphic.Mesh
@@ -78,7 +79,8 @@ func (level *Level) Start(app *App) {
 	// level.makeSphere(app, 50, *math32.NewVector3(0, -750,0))
 
 	level.initInputLayerVision(app)
-	level.initLightCube(app)
+	level.meshLightCube =  level.initMesh(app, level.meshLightCube)
+	level.meshColorsLayer = level.initMesh(app, level.meshColorsLayer)
 	// Create plane with VisionData**********************************
 	//level.initInputDataPlane(app)
 	//*****************************************************************
@@ -87,9 +89,10 @@ func (level *Level) Start(app *App) {
 // Update is called every frame.
 func (level *Level) Update(app *App, deltaTime time.Duration) {
 	level.logic.Update()
-	if(level.logic.GetReady()){
+	if level.logic.GetReady() {
 		//level.Dispose(app)
 		level.DrawInputLayerVision(app)
+		level.DrawColorsLayer()
 		level.DrawLightCube()
 	}
 }
@@ -99,9 +102,9 @@ func (level *Level) Dispose(app *App) {
 
 	// n equals objects on scene
 	n := 2
-	for i := len(app.Scene( ) .Children()); i > n; i-- {
-		app.Scene().ChildAt(i-1).Dispose()
-		app.Scene().RemoveAt(i-1)
+	for i := len(app.Scene().Children()); i > n; i-- {
+		app.Scene().ChildAt(i - 1).Dispose()
+		app.Scene().RemoveAt(i - 1)
 	}
 }
 
@@ -116,7 +119,7 @@ func (level *Level) DrawInputLayerVision(app *App) {
 	colors := math32.NewArrayF32(0, 16)
 	for key, value := range level.logic.DataVision {
 		positions.AppendVector3(&key)
-	 	colors.Append(float32(value.X / 255), float32(value.Y / 255), float32(value.Z / 255))
+		colors.Append(float32(value.X), float32(value.Y), float32(value.Z))
 	}
 	temp[0].SetBuffer(positions)
 	temp[1].SetBuffer(colors)
@@ -127,6 +130,7 @@ func (level *Level) DrawLightCube() {
 	positions := math32.NewArrayF32(0, 0)
 	colors := math32.NewArrayF32(0, 16)
 	for key, _ := range level.logic.ActiveVectors {
+	//for key, _ := range level.logic.LightCube {
 		if level.logic.LightCube[key].GetActive() {
 			positions.AppendVector3(&key)
 			colors.Append(1, 1, 1)
@@ -138,67 +142,90 @@ func (level *Level) DrawLightCube() {
 	temp[0].SetBuffer(positions)
 	temp[1].SetBuffer(colors)
 }
-	// var vertex math32.Vector3
-	// var tempI float32
-	// for i := 0; i < len(level.logic.DataVision); i++ {
-	// 	for j := 0; j < len(level.logic.DataVision[0]); j++ {
-	// 		if (j % 2.0 == 1) {
- //			tempI = 0.5
-	// 		}
-	// 		color := level.logic.DataVision[i][j]
-	// 		vertex.Set(
-	// 			float32 j),
-	// 			0,
-	// 			float32(i)+ tempI,
-	// 		)
-	// 		positions.AppendVector3(&vertex)
-	// 		colors.Append(float32(color), float32(color), float32(color))
-	// 		level.logic.LightCub[vertex] = color
-	// 		// vertex1.Set(
-	// 		// 	float32(j),
-	// 		// 	1,
-	// 		// 	float32(i)+ tempI,
-	// 		// )
-	// 		// positions.AppendVector3(&vertex)
-	// 		// if _, ok := level.logic.LightCub[vertex]; ok {
-	// 		// 	level.logic.LightCub[vertex].PowerActivation = float32(level.logic.DataVision[i][j])
-	// 		// }else {
-	// 		// 	level.logic.LightCub[vertex] = baseLogic.NewNeuron()
-	// 		// }
-			
-	// 		tempI = 0
-	// 	}
-	// }
-	// if(level.flag){
-	// 	temp[0].SetBuffer(positions)
-	// 	level.flag = false
-	// }
-	// //temp[0].SetBuffer(positions) 
-	// temp[1].SetBuffer(colors)
+
+func (level *Level) DrawColorsLayer() {
+	temp := level.meshColorsLayer.GetGeometry().VBOs()
+	positions := math32.NewArrayF32(0, 0)
+	colors := math32.NewArrayF32(0, 16)
+	for key, _ := range level.logic.ColorsLayer {
+		positions.AppendVector3(&key)
+		colors.Append(1, 1, 1)
+	//for key, _ := range level.logic.ActiveVectors {
+
+		// if level.logic.LightCube[key].GetActive() {
+		// 	positions.AppendVector3(&key)
+		// 	colors.Append(1, 1, 1)
+		// } else {
+		// 	positions.AppendVector3(&key)
+		// 	colors.Append(0, 0, 0)
+		// }
+	}
+	temp[0].SetBuffer(positions)
+	temp[1].SetBuffer(colors)
+}
 
 
-	// if(l.flagReady){
-	// 	var tempI float32
-	// 	var vectorKey math32.Vector3
-	// 	for i := 0; i < len(l.DataVision); i++ {
-	// 		for j := 0; j < len(l.DataVision[0]); j++ {
-	// 			if (j % 2.0 == 1) {
-	// 				tempI = 0.5
-	// 			}
-	// 			vectorKey.Set(float32(j), 0, float32(i) + tempI)
-	// 			l.LightCub[vectorKey] = NewNeuron()
-	// 			//temp := l.LightCub[vectorKey]
-	// 			//temp.PowerActivation = l.DataVision[i][j]
-	// 			l.LightCub[vectorKey].PowerActivation = l.DataVision[i][j]
-	// 			tempI = 0
-	// 		}
-	// 	}
-	// }
+
+// var vertex math32.Vector3
+// var tempI float32
+// for i := 0; i < len(level.logic.DataVision); i++ {
+// 	for j := 0; j < len(level.logic.DataVision[0]); j++ {
+// 		if (j % 2.0 == 1) {
+//			tempI = 0.5
+// 		}
+// 		color := level.logic.DataVision[i][j]
+// 		vertex.Set(
+// 			float32 j),
+// 			0,
+// 			float32(i)+ tempI,
+// 		)
+// 		positions.AppendVector3(&vertex)
+// 		colors.Append(float32(color), float32(color), float32(color))
+// 		level.logic.LightCub[vertex] = color
+// 		// vertex1.Set(
+// 		// 	float32(j),
+// 		// 	1,
+// 		// 	float32(i)+ tempI,
+// 		// )
+// 		// positions.AppendVector3(&vertex)
+// 		// if _, ok := level.logic.LightCub[vertex]; ok {
+// 		// 	level.logic.LightCub[vertex].PowerActivation = float32(level.logic.DataVision[i][j])
+// 		// }else {
+// 		// 	level.logic.LightCub[vertex] = baseLogic.NewNeuron()
+// 		// }
+
+// 		tempI = 0
+// 	}
+// }
+// if(level.flag){
+// 	temp[0].SetBuffer(positions)
+// 	level.flag = false
+// }
+// //temp[0].SetBuffer(positions)
+// temp[1].SetBuffer(colors)
+
+// if(l.flagReady){
+// 	var tempI float32
+// 	var vectorKey math32.Vector3
+// 	for i := 0; i < len(l.DataVision); i++ {
+// 		for j := 0; j < len(l.DataVision[0]); j++ {
+// 			if (j % 2.0 == 1) {
+// 				tempI = 0.5
+// 			}
+// 			vectorKey.Set(float32(j), 0, float32(i) + tempI)
+// 			l.LightCub[vectorKey] = NewNeuron()
+// 			//temp := l.LightCub[vectorKey]
+// 			//temp.PowerActivation = l.DataVision[i][j]
+// 			l.LightCub[vectorKey].PowerActivation = l.DataVision[i][j]
+// 			tempI = 0
+// 		}
+// 	}
+// }
 //}
 
-func (level *Level) initInputLayerVision(app *App){
+func (level *Level) initInputLayerVision(app *App) {
 	geom := geometry.NewGeometry()
-	colors := math32.NewArrayF32(0, 16) 
+	colors := math32.NewArrayF32(0, 16)
 	color := 1
 	colors.Append(float32(color), float32(color), float32(color))
 	positions := math32.NewArrayF32(0, 0)
@@ -221,7 +248,7 @@ func (level *Level) initInputLayerVision(app *App){
 	app.Scene().Add(level.mesh)
 }
 
-func (level *Level) initLightCube(app *App){
+func (level *Level) initMesh(app *App, mesh *graphic.Points) *graphic.Points{
 	geom := geometry.NewGeometry()
 	colors := math32.NewArrayF32(0, 16)
 	color := 1
@@ -236,15 +263,14 @@ func (level *Level) initLightCube(app *App){
 	colors = nil
 
 	// Creates point material
-	//mat := material.NewPoint(&math32.Color{0, 0, 0})
 	mat := material.NewBasic()
-	//mat.SetSize(50)
 
 	// Creates points mesh
-	level.meshLightCube = graphic.NewPoints(geom, mat)
-	//level.mesh.SetScale(1, 1, 1)
-	app.Scene().Add(level.meshLightCube)
+	mesh = graphic.NewPoints(geom, mat)
+	app.Scene().Add(mesh)
+	return mesh
 }
+
 // func (level *Level) makeSphere(app *App, size float64, pos math32.Vector3){
 // 	geom := geometry.NewSphere(size, 32, 16)
 // 	mat := material.NewStandard(&math32.Color{1, 1, 1})
@@ -292,10 +318,9 @@ func (level *Level) initLightCube(app *App){
 // 	level.mesh.AddMaterial(level.mesh, mat, 0, len(level.logic.DataVision) * len(level.logic.DataVision[0]))
 // }
 
-
 //func (level *Level) inputLayerVision(index float32, app *App) {
 //	// Creates geometry
-//	geom := geometry.NewGeometry() 
+//	geom := geometry.NewGeometry()
 //	positions := math32.NewArrayF32(0, 0)
 //	colors := math32.NewArrayF32(0, 16)
 //
@@ -344,7 +369,7 @@ func (level *Level) updPlaneMaterial(app *App) {
 
 func (level *Level) initInputDataPlane(app *App) {
 	// Create plane with VisionData**********************************
-	texfile := app.DirData() + "\\webCam.jpg"//"/images/tiger1.jpg"
+	texfile := app.DirData() + "\\webCam.jpg" //"/images/tiger1.jpg"
 	tex, err := texture.NewTexture2DFromImage(texfile)
 	if err != nil {
 		//app.Log().Fatal("Error:%s loading texture:%s", err, texfile)
